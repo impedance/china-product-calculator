@@ -11,7 +11,11 @@ import {
   loadSavedScenario,
   getCalculationSummary,
   getBreakdownData,
-  setLastSaved
+  setLastSaved,
+  isStepComplete,
+  unlockStep,
+  completeStep,
+  expandStep
 } from './state.js';
 
 import { 
@@ -41,6 +45,11 @@ import {
   getFieldIdFromElementId,
   getInputElementId
 } from './validation.js';
+
+import {
+  initProgressiveUI,
+  loadLastUsedValues
+} from './progressive-ui.js';
 
 // DOM element references
 const elements = {};
@@ -123,8 +132,17 @@ function cacheElements() {
   elements.sheetContent = document.getElementById('sheet-content');
   elements.sheetClose = document.getElementById('sheet-close');
   
-  // Cards for accordion
-  elements.cards = document.querySelectorAll('.card');
+  // Step panels for progressive UI
+  elements.stepPanels = {};
+  for (let i = 1; i <= 4; i++) {
+    elements.stepPanels[i] = document.getElementById(`step-${i}`);
+  }
+  elements.stepIndicators = document.querySelectorAll('.step-indicator');
+  elements.stepConnectors = document.querySelectorAll('.step-connector');
+  elements.btnExpandStep2 = document.getElementById('btn-expand-step-2');
+  elements.btnExpandStep3 = document.getElementById('btn-expand-step-3');
+  elements.btnExpandStep4 = document.getElementById('btn-expand-step-4');
+  elements.resultsPanel = document.getElementById('section-results');
 }
 
 /**
@@ -165,11 +183,43 @@ function setupEventListeners() {
     }
   });
   
-  // Card accordion toggle
-  elements.cards?.forEach(card => {
-    const header = card.querySelector('.card-header');
+  // Step panel accordion toggle
+  Object.entries(elements.stepPanels).forEach(([stepNum, panel]) => {
+    if (!panel) return;
+    const header = panel.querySelector('.step-panel-header');
     header?.addEventListener('click', () => {
-      card.classList.toggle('expanded');
+      if (panel.classList.contains('locked')) return;
+      
+      // Collapse all panels
+      Object.values(elements.stepPanels).forEach(p => {
+        if (p) {
+          p.classList.remove('expanded');
+          p.classList.add('collapsed');
+        }
+      });
+      
+      // Expand clicked panel
+      panel.classList.add('expanded');
+      panel.classList.remove('collapsed');
+      
+      // Update active step in state
+      expandStep(parseInt(stepNum));
+    });
+  });
+  
+  // Step CTA buttons
+  elements.btnExpandStep2?.addEventListener('click', () => expandStepPanel(2));
+  elements.btnExpandStep3?.addEventListener('click', () => expandStepPanel(3));
+  elements.btnExpandStep4?.addEventListener('click', () => expandStepPanel(4));
+  
+  // Step indicator clicks
+  elements.stepIndicators?.forEach(indicator => {
+    indicator.addEventListener('click', () => {
+      const stepNum = parseInt(indicator.dataset.step);
+      const panel = elements.stepPanels[stepNum];
+      if (panel && !panel.classList.contains('locked')) {
+        expandStepPanel(stepNum);
+      }
     });
   });
   
@@ -214,6 +264,57 @@ function handleCalculate() {
       pulseKpiCards();
     }, 300);
   }
+}
+
+/**
+ * Expand a specific step panel
+ */
+function expandStepPanel(stepNum) {
+  // Mark previous steps as complete
+  for (let i = 1; i < stepNum; i++) {
+    const panel = elements.stepPanels[i];
+    if (panel) {
+      panel.classList.add('completed');
+      panel.classList.remove('expanded');
+      panel.classList.add('collapsed');
+    }
+  }
+  
+  // Update step indicators
+  elements.stepIndicators?.forEach(indicator => {
+    const indicatorStep = parseInt(indicator.dataset.step);
+    indicator.classList.remove('active', 'completed', 'ready');
+    
+    if (indicatorStep < stepNum) {
+      indicator.classList.add('completed');
+    } else if (indicatorStep === stepNum) {
+      indicator.classList.add('active');
+    }
+  });
+  
+  // Update connectors
+  elements.stepConnectors?.forEach(connector => {
+    const from = parseInt(connector.dataset.from);
+    connector.classList.toggle('completed', from < stepNum);
+  });
+  
+  // Unlock and expand target step
+  const targetPanel = elements.stepPanels[stepNum];
+  if (targetPanel) {
+    targetPanel.classList.remove('locked', 'collapsed');
+    targetPanel.classList.add('expanded', 'ready');
+    
+    setTimeout(() => targetPanel.classList.remove('ready'), 2000);
+  }
+  
+  // Update state
+  completeStep(stepNum - 1);
+  expandStep(stepNum);
+  
+  // Scroll to target
+  setTimeout(() => {
+    targetPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
 /**
@@ -469,6 +570,97 @@ function render(state) {
   if (elements.summaryText) {
     elements.summaryText.textContent = summary.summaryText;
   }
+  
+  // Update step panel states based on current state
+  updateStepPanelStates(input, output, ui);
+}
+
+/**
+ * Update step panel states based on current state
+ */
+function updateStepPanelStates(input, output, ui) {
+  // Check step completion
+  const step1Complete = input.unitPriceCny > 0 && input.cnyRubRate > 0;
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0 && input.usdRubRate > 0;
+  const step3Complete = output.totalCostRub !== null;
+  const step4Complete = output.retailPriceRub !== null;
+  
+  // Update step 1
+  const panel1 = elements.stepPanels[1];
+  if (panel1) {
+    panel1.classList.toggle('completed', step1Complete);
+    elements.stepIndicators[0]?.classList.toggle('completed', step1Complete);
+  }
+  
+  // Unlock step 2
+  const panel2 = elements.stepPanels[2];
+  if (panel2 && step1Complete) {
+    panel2.classList.remove('locked');
+    panel2.classList.toggle('completed', step2Complete);
+    elements.stepIndicators[1]?.classList.remove('locked');
+    elements.stepIndicators[1]?.classList.toggle('completed', step2Complete);
+    elements.stepConnectors[0]?.classList.toggle('completed', step1Complete);
+    
+    // Enable CTA button
+    if (elements.btnExpandStep2) {
+      elements.btnExpandStep2.disabled = false;
+    }
+  }
+  
+  // Unlock step 3
+  const panel3 = elements.stepPanels[3];
+  if (panel3 && step2Complete) {
+    panel3.classList.remove('locked');
+    panel3.classList.toggle('completed', step3Complete);
+    elements.stepIndicators[2]?.classList.remove('locked');
+    elements.stepIndicators[2]?.classList.toggle('completed', step3Complete);
+    elements.stepConnectors[1]?.classList.toggle('completed', step2Complete);
+  }
+  
+  // Unlock step 4
+  const panel4 = elements.stepPanels[4];
+  if (panel4 && step3Complete) {
+    panel4.classList.remove('locked');
+    panel4.classList.toggle('completed', step4Complete);
+    elements.stepIndicators[3]?.classList.remove('locked');
+    elements.stepIndicators[3]?.classList.toggle('completed', step4Complete);
+    elements.stepConnectors[2]?.classList.toggle('completed', step3Complete);
+  }
+  
+  // Update step summaries
+  const summaryPurchase = document.getElementById('summary-purchase');
+  if (summaryPurchase) {
+    summaryPurchase.textContent = output.purchaseRub !== null ? formatRub(output.purchaseRub) : '—';
+  }
+  
+  const summaryCargo = document.getElementById('summary-cargo');
+  const summaryTotalCost2 = document.getElementById('summary-total-cost-2');
+  if (summaryCargo) {
+    summaryCargo.textContent = output.cargoCostRub !== null ? formatRub(output.cargoCostRub) : '—';
+  }
+  if (summaryTotalCost2) {
+    const step2Total = (output.purchaseRub || 0) + (output.cargoCostRub || 0) + (input.chinaDeliveryRub || 0);
+    summaryTotalCost2.textContent = step2Total > 0 ? formatRub(step2Total) : '—';
+  }
+  
+  const summaryFinalCost = document.getElementById('summary-final-cost');
+  if (summaryFinalCost) {
+    summaryFinalCost.textContent = output.totalCostRub !== null ? formatRub(output.totalCostRub) : '—';
+  }
+  
+  // Update inline previews
+  const previewUnitPrice = document.getElementById('preview-unit-price');
+  const previewCnyRate = document.getElementById('preview-cny-rate');
+  if (previewUnitPrice) {
+    const purchaseRub = (input.unitPriceCny || 0) * (input.cnyRubRate || 0);
+    previewUnitPrice.querySelector('.preview-value').textContent = purchaseRub > 0 ? formatRub(purchaseRub) : '—';
+  }
+  if (previewCnyRate) {
+    const calcText = (input.unitPriceCny || 0) > 0 && (input.cnyRubRate || 0) > 0
+      ? `${formatRub((input.unitPriceCny || 0) * (input.cnyRubRate || 0))} ₽`
+      : '—';
+    previewCnyRate.querySelector('.preview-value').textContent = calcText;
+  }
 }
 
 /**
@@ -541,6 +733,9 @@ function init() {
   initTheme();
   setupThemeListeners();
   
+  // Initialize progressive UI
+  initProgressiveUI();
+  
   // Subscribe to state changes
   subscribe(render);
   
@@ -557,6 +752,9 @@ function init() {
     }
   }
   
+  // Load last used values
+  loadLastUsedValues();
+  
   // Register service worker for PWA
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
@@ -568,7 +766,7 @@ function init() {
       });
   }
   
-  console.log('[App] China Product Calculator initialized');
+  console.log('[App] China Product Calculator initialized with progressive UI');
 }
 
 // Start the app when DOM is ready

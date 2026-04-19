@@ -41,7 +41,14 @@ const initialUiState = {
   touchedFields: {},
   fieldErrors: {},
   lastSavedAt: null,
-  hasValidCalculation: false
+  hasValidCalculation: false,
+  steps: {
+    1: { unlocked: true, completed: false, expanded: true },
+    2: { unlocked: false, completed: false, expanded: false },
+    3: { unlocked: false, completed: false, expanded: false },
+    4: { unlocked: false, completed: false, expanded: false }
+  },
+  activeStep: 1
 };
 
 // Current state (module-level singleton)
@@ -151,6 +158,42 @@ export function recalculate() {
   } else {
     // Clear outputs if scenario is invalid
     currentState.output = { ...initialOutputState };
+  }
+  
+  // Update step completion and unlocking
+  updateStepProgression();
+}
+
+/**
+ * Update step progression based on current input
+ */
+function updateStepProgression() {
+  const { input } = currentState;
+  
+  // Step 1: Complete if unit price and rate are filled
+  const step1Complete = input.unitPriceCny > 0 && input.cnyRubRate > 0;
+  currentState.ui.steps[1].completed = step1Complete;
+  
+  // Unlock step 2 if step 1 is complete
+  if (step1Complete) {
+    currentState.ui.steps[2].unlocked = true;
+  }
+  
+  // Step 2: Complete if weight, cargo rate, and USD rate are filled
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0 && input.usdRubRate > 0;
+  currentState.ui.steps[2].completed = step2Complete;
+  
+  // Unlock step 3 if step 2 is complete
+  if (step2Complete) {
+    currentState.ui.steps[3].unlocked = true;
+  }
+  
+  // Step 3: Always complete (optional fields)
+  currentState.ui.steps[3].completed = step2Complete;
+  
+  // Unlock step 4 if step 3 is unlocked
+  if (currentState.ui.steps[3].unlocked) {
+    currentState.ui.steps[4].unlocked = true;
   }
 }
 
@@ -292,10 +335,81 @@ function notifyListeners() {
 }
 
 /**
+ * Check if a step is complete (all required fields filled)
+ * @param {number} stepNum - Step number (1-4)
+ * @returns {boolean} - Is step complete
+ */
+export function isStepComplete(stepNum) {
+  const { input } = currentState;
+  
+  const requiredFields = {
+    1: ['unitPriceCny', 'cnyRubRate'],
+    2: ['unitWeightKg', 'cargoRateUsdPerKg', 'usdRubRate'],
+    3: [],
+    4: []
+  };
+  
+  const fields = requiredFields[stepNum] || [];
+  return fields.every(field => {
+    const value = input[field];
+    return value !== null && value !== undefined && value !== '' && value > 0;
+  });
+}
+
+/**
+ * Unlock a step
+ * @param {number} stepNum - Step number to unlock
+ */
+export function unlockStep(stepNum) {
+  if (currentState.ui.steps[stepNum]) {
+    currentState.ui.steps[stepNum].unlocked = true;
+    notifyListeners();
+  }
+}
+
+/**
+ * Complete a step
+ * @param {number} stepNum - Step number to mark as complete
+ */
+export function completeStep(stepNum) {
+  if (currentState.ui.steps[stepNum]) {
+    currentState.ui.steps[stepNum].completed = true;
+    currentState.ui.steps[stepNum].expanded = false;
+    
+    // Unlock next step
+    const nextStep = stepNum + 1;
+    if (currentState.ui.steps[nextStep]) {
+      currentState.ui.steps[nextStep].unlocked = true;
+      currentState.ui.activeStep = nextStep;
+    }
+    
+    notifyListeners();
+  }
+}
+
+/**
+ * Expand a specific step
+ * @param {number} stepNum - Step number to expand
+ */
+export function expandStep(stepNum) {
+  // Collapse all steps
+  Object.keys(currentState.ui.steps).forEach(key => {
+    currentState.ui.steps[key].expanded = false;
+  });
+  
+  // Expand target step
+  if (currentState.ui.steps[stepNum]) {
+    currentState.ui.steps[stepNum].expanded = true;
+    currentState.ui.activeStep = stepNum;
+  }
+  
+  notifyListeners();
+}
+
+/**
  * Gets the current calculation summary for display
  * @returns {Object} - Summary data
  */
-export function getCalculationSummary() {
   const { input, output, ui } = currentState;
   
   // Find the main cost driver
