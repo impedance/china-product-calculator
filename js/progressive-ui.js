@@ -107,11 +107,9 @@ function cacheElements() {
 function setupStepPanels() {
   Object.values(elements.stepPanels).forEach(panel => {
     if (!panel) return;
-    
+
     const header = panel.querySelector('.step-panel-header');
     header?.addEventListener('click', () => {
-      if (panel.classList.contains('locked')) return;
-      
       // Collapse all other panels
       Object.values(elements.stepPanels).forEach(p => {
         if (p && p !== panel) {
@@ -119,7 +117,7 @@ function setupStepPanels() {
           p.classList.add('collapsed');
         }
       });
-      
+
       // Toggle current panel
       panel.classList.toggle('expanded');
       panel.classList.toggle('collapsed');
