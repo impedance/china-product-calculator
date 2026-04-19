@@ -168,8 +168,7 @@
           unitPriceCny: 100,
           cnyRubRate: 13.5,
           chinaDeliveryRub: 20,
-          cargoRateUsdPerKg: 2,
-          usdRubRate: 100,
+          cargoRateCnyPerKg: 27,  // ≈$2/kg at rate 13.5
           unitWeightKg: 0.5,
           insuranceRate: 3.7,
           reworkRub: 50,
@@ -181,12 +180,12 @@
         const output = formulas.calculateAll(input);
         
         assertEqual(output.purchaseRub, 1350, 'Purchase in RUB');
-        assertEqual(output.cargoCostRub, 100, 'Cargo cost');
+        assertEqual(output.cargoCostRub, 182.25, 'Cargo cost');  // 0.5 * 27 * 13.5
         assertEqual(output.insuranceRub, 49.95, 'Insurance');
-        assertEqual(output.totalCostRub, 1599.95, 'Total cost');
-        assertEqual(output.retailPriceRub, 3199.90, 'Retail price');
-        assertEqual(output.taxRub, 191.99, 'Taxes');
-        assertEqual(output.profitRub, 1407.96, 'Profit');
+        assertEqual(output.totalCostRub, 1682.20, 'Total cost');
+        assertEqual(output.retailPriceRub, 3364.40, 'Retail price');
+        assertEqual(output.taxRub, 201.86, 'Taxes');
+        assertEqual(output.profitRub, 1480.34, 'Profit');
         assertEqual(output.marginRate, 0.44, 'Margin rate');
       });
       
@@ -221,8 +220,7 @@
           unitPriceCny: 100,
           cnyRubRate: 13.5,
           chinaDeliveryRub: 20,
-          cargoRateUsdPerKg: 2,
-          usdRubRate: 100,
+          cargoRateCnyPerKg: 27,
           unitWeightKg: 0.5,
           insuranceRate: 0,
           reworkRub: 50,
@@ -234,7 +232,7 @@
         const output = formulas.calculateAll(input);
         
         assertEqual(output.taxRub, 0, 'Tax should be 0');
-        assertEqual(output.profitRub, 1600, 'Profit should include no tax deduction');
+        assertEqual(output.profitRub, 1682.20, 'Profit should include no tax deduction');  // 3364.40 - 1682.20
       });
       
       // TC-05: Zero markup
@@ -244,8 +242,7 @@
           unitPriceCny: 100,
           cnyRubRate: 13.5,
           chinaDeliveryRub: 20,
-          cargoRateUsdPerKg: 2,
-          usdRubRate: 100,
+          cargoRateCnyPerKg: 27,
           unitWeightKg: 0.5,
           insuranceRate: 0,
           reworkRub: 50,
@@ -289,8 +286,7 @@
           unitPriceCny: 100,
           cnyRubRate: 13.5,
           chinaDeliveryRub: 20,
-          cargoRateUsdPerKg: 2,
-          usdRubRate: 100,
+          cargoRateCnyPerKg: 27,
           unitWeightKg: 0.5,
           insuranceRate: 3.7,
           reworkRub: 50,
@@ -323,8 +319,7 @@
           unitPriceCny: null,
           cnyRubRate: null,
           chinaDeliveryRub: null,
-          cargoRateUsdPerKg: null,
-          usdRubRate: null,
+          cargoRateCnyPerKg: null,
           unitWeightKg: null,
           insuranceRate: null,
           reworkRub: null,
@@ -375,8 +370,7 @@
           unitPriceCny: 75,
           cnyRubRate: 14,
           chinaDeliveryRub: 30,
-          cargoRateUsdPerKg: 2.5,
-          usdRubRate: 95,
+          cargoRateCnyPerKg: 34,  // ≈$2.44/kg at rate 14
           unitWeightKg: 0.8,
           insuranceRate: 3,
           reworkRub: 40,
@@ -388,12 +382,12 @@
         const output = formulas.calculateAll(input);
         
         assertEqual(output.purchaseRub, 1050, 'Purchase in RUB');
-        assertEqual(output.cargoCostRub, 190, 'Cargo cost');
+        assertEqual(output.cargoCostRub, 380.80, 'Cargo cost');  // 0.8 * 34 * 14
         assertEqual(output.insuranceRub, 31.50, 'Insurance');
-        assertEqual(output.totalCostRub, 1366.50, 'Total cost');
-        assertEqual(output.retailPriceRub, 2459.70, 'Retail price');
-        assertEqual(output.taxRub, 147.58, 'Taxes');
-        assertEqual(output.profitRub, 945.62, 'Profit');
+        assertEqual(output.totalCostRub, 1557.30, 'Total cost');
+        assertEqual(output.retailPriceRub, 2803.14, 'Retail price');
+        assertEqual(output.taxRub, 168.19, 'Taxes');
+        assertEqual(output.profitRub, 1077.65, 'Profit');
         assertEqual(output.marginRate, 0.384, 'Margin rate');
       });
       

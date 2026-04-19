@@ -20,7 +20,7 @@ const LAST_USED_KEY = 'china_calc_last_used';
 // Step configuration
 const STEPS = {
   1: { id: 'step-1', requiredFields: ['unitPriceCny', 'cnyRubRate'] },
-  2: { id: 'step-2', requiredFields: ['unitWeightKg', 'cargoRateUsdPerKg', 'usdRubRate'] },
+  2: { id: 'step-2', requiredFields: ['unitWeightKg', 'cargoRateCnyPerKg'] },
   3: { id: 'step-3', requiredFields: [] },
   4: { id: 'step-4', requiredFields: [] }
 };
@@ -77,7 +77,6 @@ function cacheElements() {
   
   // Inline previews
   elements.previewUnitPrice = document.getElementById('preview-unit-price');
-  elements.previewCnyRate = document.getElementById('preview-cny-rate');
   
   // Sliders
   elements.markupSlider = document.getElementById('markup-slider');
@@ -383,13 +382,6 @@ function setupInlinePreviews() {
         purchaseRub > 0 ? formatRub(purchaseRub) : '—';
     }
     
-    if (elements.previewCnyRate) {
-      elements.previewCnyRate.querySelector('.preview-value').textContent = 
-        unitPrice > 0 && cnyRate > 0 
-          ? `${formatRub(unitPrice * cnyRate)} ₽` 
-          : '—';
-    }
-    
     // Enable/disable CTA
     if (elements.btnExpandStep2) {
       const isValid = unitPrice > 0 && cnyRate > 0;
@@ -469,14 +461,14 @@ function checkStepUnlockConditions(input, output) {
   }
   
   // Step 3: Unlock if step 2 has valid inputs
-  const step2Valid = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0 && input.usdRubRate > 0;
+  const step2Valid = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
   if (step2Valid && elements.stepPanels[3]?.classList.contains('locked')) {
     elements.stepPanels[3].classList.remove('locked');
     elements.stepPanels[3].classList.add('ready');
   }
   
   // Step 4: Unlock when step 2 is complete (step 3 has no required fields)
-  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0 && input.usdRubRate > 0;
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
   if (step2Complete && elements.stepPanels[4]?.classList.contains('locked')) {
     elements.stepPanels[4].classList.remove('locked');
     elements.stepPanels[4].classList.add('ready');
@@ -491,8 +483,7 @@ function getInputElementId(fieldId) {
     unitPriceCny: 'unit-price-cny',
     cnyRubRate: 'cny-rub-rate',
     unitWeightKg: 'unit-weight',
-    cargoRateUsdPerKg: 'cargo-rate-usd',
-    usdRubRate: 'usd-rub-rate',
+    cargoRateCnyPerKg: 'cargo-rate-cny',
     chinaDeliveryRub: 'china-delivery-rub',
     insuranceRate: 'insurance-rate',
     reworkRub: 'rework-rub',
@@ -533,7 +524,7 @@ function getLastUsed(fieldId) {
  * Load all last used values into inputs
  */
 export function loadLastUsedValues() {
-  const fields = ['unitPriceCny', 'cnyRubRate', 'cargoRateUsdPerKg', 'usdRubRate', 
+  const fields = ['unitPriceCny', 'cnyRubRate', 'cargoRateCnyPerKg', 
                   'chinaDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
   
   fields.forEach(fieldId => {

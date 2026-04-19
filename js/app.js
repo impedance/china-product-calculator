@@ -87,8 +87,7 @@ function cacheElements() {
     cnyRubRate: document.getElementById('cny-rub-rate'),
     chinaDeliveryRub: document.getElementById('china-delivery-rub'),
     densityKgM3: document.getElementById('density'),
-    cargoRateUsdPerKg: document.getElementById('cargo-rate-usd'),
-    usdRubRate: document.getElementById('usd-rub-rate'),
+    cargoRateCnyPerKg: document.getElementById('cargo-rate-cny'),
     unitWeightKg: document.getElementById('unit-weight'),
     insuranceRate: document.getElementById('insurance-rate'),
     reworkRub: document.getElementById('rework-rub'),
@@ -102,8 +101,7 @@ function cacheElements() {
     unitPriceCny: document.getElementById('error-unit-price-cny'),
     cnyRubRate: document.getElementById('error-cny-rub-rate'),
     chinaDeliveryRub: document.getElementById('error-china-delivery-rub'),
-    cargoRateUsdPerKg: document.getElementById('error-cargo-rate-usd'),
-    usdRubRate: document.getElementById('error-usd-rub-rate'),
+    cargoRateCnyPerKg: document.getElementById('error-cargo-rate-cny'),
     unitWeightKg: document.getElementById('error-unit-weight'),
     insuranceRate: document.getElementById('error-insurance-rate'),
     reworkRub: document.getElementById('error-rework-rub'),
@@ -412,7 +410,7 @@ function showHelpSheet() {
       <p><strong>Формулы расчёта:</strong></p>
       <ul>
         <li>Закупка в ₽ = Цена (CNY) × Курс CNY/RUB</li>
-        <li>Стоимость карго = Вес × Ставка (USD/кг) × Курс USD/RUB</li>
+        <li>Стоимость карго = Вес × Ставка (¥/кг) × Курс CNY/RUB</li>
         <li>Страховка = Закупка × Страховка %</li>
         <li>Себестоимость = Закупка + Доставка по Китаю + Карго + Страховка + Переработка + Упаковка</li>
         <li>Цена продажи = Себестоимость × (1 + Наценка %)</li>
@@ -430,7 +428,6 @@ function showHelpSheet() {
       <p><strong>Примечания:</strong></p>
       <ul>
         <li>Плотность (кг/м³) сохраняется, но не используется в расчётах MVP</li>
-        <li>Курс USD/RUB обязателен для расчёта стоимости карго</li>
         <li>Все данные сохраняются локально в браузере</li>
       </ul>
     </div>
@@ -618,7 +615,7 @@ function render(state) {
 function updateStepPanelStates(input, output, ui) {
   // Check step completion
   const step1Complete = input.unitPriceCny > 0 && input.cnyRubRate > 0;
-  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0 && input.usdRubRate > 0;
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
   const step3Complete = output.totalCostRub !== null;
   const step4Complete = output.retailPriceRub !== null;
   
@@ -687,16 +684,9 @@ function updateStepPanelStates(input, output, ui) {
   
   // Update inline previews
   const previewUnitPrice = document.getElementById('preview-unit-price');
-  const previewCnyRate = document.getElementById('preview-cny-rate');
   if (previewUnitPrice) {
     const purchaseRub = (input.unitPriceCny || 0) * (input.cnyRubRate || 0);
     previewUnitPrice.querySelector('.preview-value').textContent = purchaseRub > 0 ? formatRub(purchaseRub) : '—';
-  }
-  if (previewCnyRate) {
-    const calcText = (input.unitPriceCny || 0) > 0 && (input.cnyRubRate || 0) > 0
-      ? `${formatRub((input.unitPriceCny || 0) * (input.cnyRubRate || 0))} ₽`
-      : '—';
-    previewCnyRate.querySelector('.preview-value').textContent = calcText;
   }
 }
 

@@ -15,12 +15,12 @@ export function validateField(fieldId, value) {
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
   
   // Fields that must be positive (> 0)
-  const positiveFields = ['cnyRubRate', 'usdRubRate'];
+  const positiveFields = ['cnyRubRate'];
   
   // Fields that must be non-negative (>= 0)
   const nonNegativeFields = [
     'unitPriceCny',
-    'cargoRateUsdPerKg',
+    'cargoRateCnyPerKg',
     'unitWeightKg',
     'markupRate',
     'taxRate'
@@ -210,8 +210,7 @@ export function getInputElementId(fieldId) {
     cnyRubRate: 'cny-rub-rate',
     chinaDeliveryRub: 'china-delivery-rub',
     densityKgM3: 'density',
-    cargoRateUsdPerKg: 'cargo-rate-usd',
-    usdRubRate: 'usd-rub-rate',
+    cargoRateCnyPerKg: 'cargo-rate-cny',
     unitWeightKg: 'unit-weight',
     insuranceRate: 'insurance-rate',
     reworkRub: 'rework-rub',
@@ -236,8 +235,7 @@ export function getFieldIdFromElementId(elementId) {
     'cny-rub-rate': 'cnyRubRate',
     'china-delivery-rub': 'chinaDeliveryRub',
     'density': 'densityKgM3',
-    'cargo-rate-usd': 'cargoRateUsdPerKg',
-    'usd-rub-rate': 'usdRubRate',
+    'cargo-rate-cny': 'cargoRateCnyPerKg',
     'unit-weight': 'unitWeightKg',
     'insurance-rate': 'insuranceRate',
     'rework-rub': 'reworkRub',

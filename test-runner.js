@@ -54,10 +54,10 @@ function calculatePurchaseRub(unitPriceCny, cnyRubRate) {
   return unitPriceCny * cnyRubRate;
 }
 
-function calculateCargoCostRub(unitWeightKg, cargoRateUsdPerKg, usdRubRate) {
-  if (unitWeightKg === null || cargoRateUsdPerKg === null || usdRubRate === null) return null;
-  if (unitWeightKg < 0 || cargoRateUsdPerKg < 0 || usdRubRate <= 0) return null;
-  return unitWeightKg * cargoRateUsdPerKg * usdRubRate;
+function calculateCargoCostRub(unitWeightKg, cargoRateCnyPerKg, cnyRubRate) {
+  if (unitWeightKg === null || cargoRateCnyPerKg === null || cnyRubRate === null) return null;
+  if (unitWeightKg < 0 || cargoRateCnyPerKg < 0 || cnyRubRate <= 0) return null;
+  return unitWeightKg * cargoRateCnyPerKg * cnyRubRate;
 }
 
 function calculateInsuranceRub(purchaseRub, insuranceRate) {
@@ -108,8 +108,8 @@ test('Purchase calculation', () => {
 });
 
 test('Cargo cost calculation', () => {
-  const result = calculateCargoCostRub(0.5, 2, 100);
-  assertEqual(result, 100, 'Cargo should be 100');
+  const result = calculateCargoCostRub(0.5, 27, 13.5);  // 0.5 * 27 * 13.5 = 182.25
+  assertEqual(result, 182.25, 'Cargo should be 182.25');
 });
 
 test('Insurance calculation', () => {
@@ -120,7 +120,7 @@ test('Insurance calculation', () => {
 
 test('Total cost calculation', () => {
   const purchase = calculatePurchaseRub(100, 13.5);
-  const cargo = calculateCargoCostRub(0.5, 2, 100);
+  const cargo = calculateCargoCostRub(0.5, 27, 13.5);  // 182.25
   const insurance = calculateInsuranceRub(purchase, 3.7);
   const result = calculateTotalCostRub({
     purchaseRub: purchase,
@@ -130,26 +130,26 @@ test('Total cost calculation', () => {
     reworkRub: 50,
     packagingRub: 30
   });
-  assertEqual(result, 1599.95, 'Total cost should be 1599.95');
+  assertEqual(result, 1682.20, 'Total cost should be 1682.20');
 });
 
 test('Retail price calculation', () => {
-  const result = calculateRetailPriceRub(1599.95, 100);
-  assertEqual(result, 3199.90, 'Retail should be 3199.90');
+  const result = calculateRetailPriceRub(1682.20, 100);
+  assertEqual(result, 3364.40, 'Retail should be 3364.40');
 });
 
 test('Tax calculation', () => {
-  const result = calculateTaxRub(3199.90, 6);
-  assertEqual(result, 191.99, 'Tax should be 191.99');
+  const result = calculateTaxRub(3364.40, 6);
+  assertEqual(result, 201.86, 'Tax should be 201.86');
 });
 
 test('Profit calculation', () => {
-  const result = calculateProfitRub(3199.90, 1599.95, 191.99);
-  assertEqual(result, 1407.96, 'Profit should be 1407.96');
+  const result = calculateProfitRub(3364.40, 1682.20, 201.86);
+  assertEqual(result, 1480.34, 'Profit should be 1480.34');
 });
 
 test('Margin calculation', () => {
-  const result = calculateMarginRate(1407.96, 3199.90);
+  const result = calculateMarginRate(1480.34, 3364.40);
   assertEqual(result, 0.44, 'Margin should be 44%');
 });
 
@@ -205,7 +205,7 @@ test('Null input returns null', () => {
 console.log('\n--- TC-04: Example B ---');
 test('Example B full calculation', () => {
   const purchase = calculatePurchaseRub(75, 14);
-  const cargo = calculateCargoCostRub(0.8, 2.5, 95);
+  const cargo = calculateCargoCostRub(0.8, 34, 14);  // 0.8 * 34 * 14 = 380.8
   const insurance = calculateInsuranceRub(purchase, 3);
   const total = calculateTotalCostRub({
     purchaseRub: purchase,
@@ -221,12 +221,12 @@ test('Example B full calculation', () => {
   const margin = calculateMarginRate(profit, retail);
   
   assertEqual(purchase, 1050, 'Purchase');
-  assertEqual(cargo, 190, 'Cargo');
+  assertEqual(cargo, 380.80, 'Cargo');
   assertEqual(insurance, 31.50, 'Insurance');
-  assertEqual(total, 1366.50, 'Total cost');
-  assertEqual(retail, 2459.70, 'Retail');
-  assertEqual(tax, 147.58, 'Tax');
-  assertEqual(profit, 945.62, 'Profit');
+  assertEqual(total, 1557.30, 'Total cost');
+  assertEqual(retail, 2803.14, 'Retail');
+  assertEqual(tax, 168.19, 'Tax');
+  assertEqual(profit, 1077.65, 'Profit');
   assertEqual(margin, 0.384, 'Margin');
 });
 

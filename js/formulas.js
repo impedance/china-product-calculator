@@ -79,20 +79,20 @@ export function calculatePurchaseRub(unitPriceCny, cnyRubRate) {
 
 /**
  * Calculates cargo cost in RUB
- * Formula: cargoCostRub = unitWeightKg * cargoRateUsdPerKg * usdRubRate
+ * Formula: cargoCostRub = unitWeightKg * cargoRateCnyPerKg * cnyRubRate
  * @param {number|null} unitWeightKg - Unit weight in kg
- * @param {number|null} cargoRateUsdPerKg - Cargo rate in USD per kg
- * @param {number|null} usdRubRate - USD to RUB exchange rate
+ * @param {number|null} cargoRateCnyPerKg - Cargo rate in CNY per kg
+ * @param {number|null} cnyRubRate - CNY to RUB exchange rate
  * @returns {number|null} - Cargo cost in RUB or null if inputs invalid
  */
-export function calculateCargoCostRub(unitWeightKg, cargoRateUsdPerKg, usdRubRate) {
+export function calculateCargoCostRub(unitWeightKg, cargoRateCnyPerKg, cnyRubRate) {
   if (!isValidNonNegativeNumber(unitWeightKg) || 
-      !isValidNonNegativeNumber(cargoRateUsdPerKg) || 
-      !isValidPositiveNumber(usdRubRate)) {
+      !isValidNonNegativeNumber(cargoRateCnyPerKg) || 
+      !isValidPositiveNumber(cnyRubRate)) {
     return null;
   }
   
-  const result = unitWeightKg * cargoRateUsdPerKg * usdRubRate;
+  const result = unitWeightKg * cargoRateCnyPerKg * cnyRubRate;
   return Number.isFinite(result) ? result : null;
 }
 
@@ -236,11 +236,11 @@ export function calculateAll(input) {
   // Step 1: Calculate purchase in RUB
   const purchaseRub = calculatePurchaseRub(input.unitPriceCny, input.cnyRubRate);
   
-  // Step 2: Calculate cargo cost in RUB
+  // Step 2: Calculate cargo cost in RUB (using CNY rate)
   const cargoCostRub = calculateCargoCostRub(
     input.unitWeightKg,
-    input.cargoRateUsdPerKg,
-    input.usdRubRate
+    input.cargoRateCnyPerKg,
+    input.cnyRubRate
   );
   
   // Step 3: Calculate insurance
@@ -288,8 +288,7 @@ export function getRequiredFields() {
   return [
     'unitPriceCny',
     'cnyRubRate',
-    'cargoRateUsdPerKg',
-    'usdRubRate',
+    'cargoRateCnyPerKg',
     'unitWeightKg',
     'markupRate',
     'taxRate'
@@ -308,8 +307,7 @@ export function getFieldLabels() {
     cnyRubRate: 'Курс CNY/RUB',
     chinaDeliveryRub: 'Доставка по Китаю (₽)',
     densityKgM3: 'Плотность (кг/м³)',
-    cargoRateUsdPerKg: 'Ставка карго ($/кг)',
-    usdRubRate: 'Курс USD/RUB',
+    cargoRateCnyPerKg: 'Ставка карго (¥/кг)',
     unitWeightKg: 'Вес единицы (кг)',
     insuranceRate: 'Страховка (%)',
     reworkRub: 'Переработка / брак (₽)',

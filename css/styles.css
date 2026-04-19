@@ -677,6 +677,48 @@ body {
 }
 
 /* Touch device optimizations */
+/* Exchange Rate Block - Always visible at top */
+.exchange-rate-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.exchange-rate-block .block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: var(--color-surface-elevated);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.exchange-rate-block .block-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.exchange-rate-block .block-icon {
+  font-size: var(--font-size-lg);
+}
+
+.exchange-rate-block .block-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.exchange-rate-block .block-body {
+  padding: var(--space-md);
+}
+
+.exchange-rate-block.expanded .block-body {
+  display: block;
+}
+
 @media (hover: none) {
   .btn:hover {
     transform: none;
