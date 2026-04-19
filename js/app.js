@@ -25,7 +25,6 @@ import {
 } from './formatters.js';
 
 import { 
-  saveScenario, 
   loadScenario, 
   getLastSavedAt 
 } from './storage.js';
@@ -51,6 +50,11 @@ import {
   loadLastUsedValues
 } from './progressive-ui.js';
 
+import {
+  fetchCnyRate,
+  formatEffectiveDate
+} from './exchange-rate.js';
+
 // DOM element references
 const elements = {};
 
@@ -66,7 +70,6 @@ function cacheElements() {
   elements.btnExampleB = document.getElementById('btn-example-b');
   elements.btnCalculate = document.getElementById('btn-calculate');
   elements.btnReset = document.getElementById('btn-reset');
-  elements.btnSave = document.getElementById('btn-save');
   elements.btnHelp = document.getElementById('btn-help');
   
   // KPI cards
@@ -172,7 +175,6 @@ function setupEventListeners() {
   elements.btnExampleB?.addEventListener('click', () => loadExample('example-b'));
   elements.btnCalculate?.addEventListener('click', handleCalculate);
   elements.btnReset?.addEventListener('click', handleReset);
-  elements.btnSave?.addEventListener('click', handleSave);
   elements.btnHelp?.addEventListener('click', showHelpSheet);
   
   // Bottom sheet close
@@ -358,21 +360,6 @@ function handleReset() {
     }
     
     showToast('Данные очищены');
-  }
-}
-
-/**
- * Handle save button click
- */
-function handleSave() {
-  const { input } = subscribe(() => {})();
-  const success = saveScenario(input);
-  
-  if (success) {
-    setLastSaved(new Date().toISOString());
-    showToast('Сохранено', 'success');
-  } else {
-    showToast('Ошибка сохранения');
   }
 }
 
@@ -775,7 +762,7 @@ function updateBreakdownVisualization() {
 /**
  * Initialize the application
  */
-function init() {
+async function init() {
   // Cache DOM elements
   cacheElements();
   
@@ -805,6 +792,10 @@ function init() {
   // Load last used values
   loadLastUsedValues();
   
+  // Fetch CNY exchange rate from CBR API
+  // This will always update the rate (overriding any saved value)
+  await loadExchangeRate();
+  
   // Register service worker for PWA
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
@@ -817,6 +808,55 @@ function init() {
   }
   
   console.log('[App] China Product Calculator initialized with progressive UI');
+}
+
+/**
+ * Fetch and apply CNY exchange rate
+ */
+async function loadExchangeRate() {
+  try {
+    const result = await fetchCnyRate();
+    
+    if (result !== null) {
+      // Apply the fetched rate to state
+      updateInput({ cnyRubRate: result.rate });
+      
+      // Update UI indicator
+      updateRateSourceIndicator(result);
+      
+      console.log(`[App] Exchange rate updated: ${result.rate} (${result.source})`);
+    } else {
+      // Use default rate if fetch failed and no cache available
+      updateInput({ cnyRubRate: 13.5 });
+      updateRateSourceIndicator({ rate: 13.5, source: 'default', effectiveDate: null });
+      
+      console.log('[App] Using default exchange rate: 13.5');
+    }
+  } catch (error) {
+    console.error('[App] Failed to load exchange rate:', error);
+    
+    // Fallback to default
+    updateInput({ cnyRubRate: 13.5 });
+    updateRateSourceIndicator({ rate: 13.5, source: 'default', effectiveDate: null });
+  }
+}
+
+/**
+ * Update the rate source indicator in UI
+ */
+function updateRateSourceIndicator(result) {
+  const indicator = document.getElementById('rate-source');
+  if (!indicator) return;
+  
+  if (result.source === 'CBR' || result.source === 'CBR (cached)') {
+    const date = formatEffectiveDate(result.effectiveDate);
+    const staleText = result.stale ? ' (устаревший)' : '';
+    indicator.textContent = `Курс ЦБ РФ${date ? ' на ' + date : ''}${staleText}`;
+    indicator.className = 'rate-source cbr';
+  } else if (result.source === 'default') {
+    indicator.textContent = 'Дефолтный курс';
+    indicator.className = 'rate-source default';
+  }
 }
 
 // Start the app when DOM is ready

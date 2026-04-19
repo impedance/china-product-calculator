@@ -1,98 +1,6 @@
 /* Progressive UI Components */
 /* Step-based calculator interface */
 
-/* Step Header & Progress Indicator */
-.step-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-lg);
-  padding: var(--space-md);
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-}
-
-.step-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-  cursor: pointer;
-  transition: opacity var(--transition-fast);
-}
-
-.step-indicator.locked {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.step-indicator.completed .step-number {
-  background: var(--color-success);
-  color: white;
-}
-
-.step-indicator.completed .step-number::after {
-  content: '✓';
-}
-
-.step-indicator.active .step-number {
-  background: var(--color-accent);
-  color: white;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-}
-
-.step-indicator.ready:not(.active) .step-number {
-  background: var(--color-accent);
-  color: white;
-  animation: pulse-ready 2s ease-in-out infinite;
-}
-
-@keyframes pulse-ready {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
-}
-
-.step-number {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-kpi-bg);
-  border-radius: 50%;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  transition: all var(--transition-fast);
-}
-
-.step-label {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  text-align: center;
-  white-space: nowrap;
-}
-
-.step-indicator.active .step-label {
-  color: var(--color-accent);
-  font-weight: var(--font-weight-medium);
-}
-
-.step-connector {
-  flex: 1;
-  height: 2px;
-  background: var(--color-kpi-bg);
-  margin: 0 var(--space-sm);
-  position: relative;
-  top: -10px;
-  transition: background var(--transition-fast);
-}
-
-.step-connector.completed {
-  background: var(--color-success);
-}
-
 /* Step Panel */
 .step-panel {
   background: var(--color-surface);
@@ -305,6 +213,22 @@
   color: var(--color-accent);
   font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
+}
+
+/* Rate Source Indicator */
+.rate-source {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.rate-source.cbr {
+  color: var(--color-text-secondary);
+}
+
+.rate-source.default {
+  color: var(--color-text-tertiary);
 }
 
 /* Last Used Button */
@@ -557,22 +481,6 @@
 
 /* Mobile Optimizations */
 @media (max-width: 480px) {
-  .step-header {
-    padding: var(--space-sm);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .step-label {
-    font-size: 10px;
-  }
-  
-  .step-number {
-    width: 28px;
-    height: 28px;
-    font-size: var(--font-size-xs);
-  }
-  
   .segmented-control {
     gap: var(--space-xs);
   }
@@ -600,7 +508,6 @@
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .step-indicator.ready:not(.active) .step-number,
   .btn-cta.pulse,
   .step-panel.ready:not(.expanded):not(.locked) {
     animation: none;

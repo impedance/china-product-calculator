@@ -66,32 +66,7 @@
       </div>
     </section>
 
-    <!-- Step Progress Header -->
-    <div class="step-header" id="step-header">
-      <div class="step-indicator active" data-step="1">
-        <div class="step-number">1</div>
-        <div class="step-label">Стоимость</div>
-        <div class="step-status"></div>
-      </div>
-      <div class="step-connector" data-from="1" data-to="2"></div>
-      <div class="step-indicator" data-step="2">
-        <div class="step-number">2</div>
-        <div class="step-label">Логистика</div>
-        <div class="step-status"></div>
-      </div>
-      <div class="step-connector" data-from="2" data-to="3"></div>
-      <div class="step-indicator" data-step="3">
-        <div class="step-number">3</div>
-        <div class="step-label">Дополнительно</div>
-        <div class="step-status"></div>
-      </div>
-      <div class="step-connector" data-from="3" data-to="4"></div>
-      <div class="step-indicator" data-step="4">
-        <div class="step-number">4</div>
-        <div class="step-label">Продажа</div>
-        <div class="step-status"></div>
-      </div>
-    </div>
+
 
     <!-- Step 1: Quick Cost -->
     <div class="step-panel expanded" id="step-1" data-step="1">
@@ -130,6 +105,7 @@
             <span class="preview-label">Расчёт:</span>
             <span class="preview-value">—</span>
           </div>
+          <div class="rate-source" id="rate-source"></div>
           <div class="form-error" id="error-cny-rub-rate" style="display: none;">
             <span>⚠</span> Курс должен быть больше 0
           </div>
@@ -410,7 +386,6 @@
       <button class="btn btn-secondary" id="btn-example-a">Пример A</button>
       <button class="btn btn-secondary" id="btn-example-b">Пример B</button>
       <button class="btn btn-text" id="btn-reset">Сбросить</button>
-      <button class="btn btn-text" id="btn-save">Сохранить</button>
       <button class="btn btn-text" id="btn-help" title="Справка">?</button>
     </div>
   </div>

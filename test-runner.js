@@ -230,6 +230,83 @@ test('Example B full calculation', () => {
   assertEqual(margin, 0.384, 'Margin');
 });
 
+// TC-05: Exchange Rate calculations
+console.log('\n--- TC-05: Exchange Rate calculations ---');
+
+// Simulate exchange rate calculation from CBR response
+function calculateCnyRate(cnyData) {
+  if (!cnyData || typeof cnyData.Value !== 'number' || typeof cnyData.Nominal !== 'number') {
+    return null;
+  }
+  if (cnyData.Nominal <= 0) {
+    return null;
+  }
+  const rate = cnyData.Value / cnyData.Nominal;
+  return Math.round(rate * 1000000) / 1000000;
+}
+
+function formatEffectiveDate(isoDate) {
+  if (!isoDate) return '';
+  try {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  } catch (e) {
+    return '';
+  }
+}
+
+test('CNY rate calculation: Value / Nominal', () => {
+  const cnyData = { Value: 11.42, Nominal: 1 };
+  const result = calculateCnyRate(cnyData);
+  assertEqual(result, 11.42);
+});
+
+test('CNY rate with Nominal > 1', () => {
+  const cnyData = { Value: 114.2, Nominal: 10 };
+  const result = calculateCnyRate(cnyData);
+  assertEqual(result, 11.42);
+});
+
+test('CNY rate rounding to 6 decimals', () => {
+  const cnyData = { Value: 11.42456789, Nominal: 1 };
+  const result = calculateCnyRate(cnyData);
+  assertEqual(result, 11.424568);
+});
+
+test('Invalid CNY data returns null', () => {
+  const result = calculateCnyRate(null);
+  assertNull(result);
+});
+
+test('Missing Value returns null', () => {
+  const cnyData = { Nominal: 1 };
+  const result = calculateCnyRate(cnyData);
+  assertNull(result);
+});
+
+test('Zero Nominal returns null', () => {
+  const cnyData = { Value: 11.42, Nominal: 0 };
+  const result = calculateCnyRate(cnyData);
+  assertNull(result);
+});
+
+test('Date formatting', () => {
+  const result = formatEffectiveDate('2026-04-19T11:30:00+03:00');
+  if (result !== '19.04.2026') {
+    throw new Error(`Expected '19.04.2026', got '${result}'`);
+  }
+});
+
+test('Empty date returns empty string', () => {
+  const result = formatEffectiveDate(null);
+  if (result !== '') {
+    throw new Error(`Expected '', got '${result}'`);
+  }
+});
+
 // Summary
 console.log('\n--- Summary ---');
 const passed = testResults.filter(r => r.status === 'PASS').length;
