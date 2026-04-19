@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="128" fill="url(#grad)"/>
+  
+  <!-- Calculator symbol -->
+  <g transform="translate(96, 96)" fill="white">
+    <!-- Display -->
+    <rect x="16" y="16" width="288" height="64" rx="8" fill="white" opacity="0.9"/>
+    
+    <!-- Button rows -->
+    <rect x="16" y="104" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="96" y="104" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="176" y="104" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="256" y="104" width="48" height="64" rx="8" opacity="0.6"/>
+    
+    <rect x="16" y="184" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="96" y="184" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="176" y="184" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="256" y="184" width="48" height="64" rx="8" opacity="0.6"/>
+    
+    <rect x="16" y="264" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="96" y="264" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="176" y="264" width="64" height="64" rx="8" opacity="0.8"/>
+    <rect x="256" y="264" width="48" height="144" rx="8" opacity="0.6"/>
+    
+    <!-- Yuan symbol -->
+    <text x="320" y="140" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white">¥</text>
+  </g>
+</svg>
