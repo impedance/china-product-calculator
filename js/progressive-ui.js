@@ -41,6 +41,9 @@ export function initProgressiveUI() {
   setupStepNavigation();
   setupInlinePreviews();
   
+  // Push default control values into state
+  updateInput({ markupRate: 1, taxRate: 0.06, insuranceRate: 0 });
+  
   // Subscribe to state changes
   subscribe(updateUI);
   
@@ -472,9 +475,9 @@ function checkStepUnlockConditions(input, output) {
     elements.stepPanels[3].classList.add('ready');
   }
   
-  // Step 4: Unlock if step 3 is accessible (always available)
-  const step3Valid = output.totalCostRub !== null;
-  if (step3Valid && elements.stepPanels[4]?.classList.contains('locked')) {
+  // Step 4: Unlock when step 2 is complete (step 3 has no required fields)
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0 && input.usdRubRate > 0;
+  if (step2Complete && elements.stepPanels[4]?.classList.contains('locked')) {
     elements.stepPanels[4].classList.remove('locked');
     elements.stepPanels[4].classList.add('ready');
   }

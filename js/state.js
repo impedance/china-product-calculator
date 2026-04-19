@@ -3,7 +3,16 @@
  * Central state management for the calculator
  */
 
-import { calculateAll } from './formulas.js';
+import {
+  calculatePurchaseRub,
+  calculateCargoCostRub,
+  calculateInsuranceRub,
+  calculateTotalCostRub,
+  calculateRetailPriceRub,
+  calculateTaxRub,
+  calculateProfitRub,
+  calculateMarginRate
+} from './formulas.js';
 import { validateAllFields, isScenarioValid } from './validation.js';
 
 // Initial empty state
@@ -17,11 +26,11 @@ const initialInputState = {
   cargoRateUsdPerKg: null,
   usdRubRate: null,
   unitWeightKg: null,
-  insuranceRate: null,
+  insuranceRate: 0,
   reworkRub: null,
   packagingRub: null,
-  markupRate: null,
-  taxRate: null
+  markupRate: 1,
+  taxRate: 0.06
 };
 
 const initialOutputState = {
@@ -145,22 +154,41 @@ export function setInputField(fieldId, value) {
 
 /**
  * Recalculates all outputs based on current input
+ * Uses partial calculation: computes whatever is possible
  */
 export function recalculate() {
-  // Check if scenario is valid for calculation
-  const isValid = isScenarioValid(currentState.input);
+  const { input } = currentState;
+
+  const purchaseRub = calculatePurchaseRub(input.unitPriceCny, input.cnyRubRate);
+  const cargoCostRub = calculateCargoCostRub(input.unitWeightKg, input.cargoRateUsdPerKg, input.usdRubRate);
+  const insuranceRub = calculateInsuranceRub(purchaseRub, input.insuranceRate || 0);
+  const totalCostRub = calculateTotalCostRub({
+    purchaseRub,
+    chinaDeliveryRub: input.chinaDeliveryRub || 0,
+    cargoCostRub,
+    insuranceRub,
+    reworkRub: input.reworkRub || 0,
+    packagingRub: input.packagingRub || 0
+  });
+  const retailPriceRub = calculateRetailPriceRub(totalCostRub, input.markupRate);
+  const taxRub = calculateTaxRub(retailPriceRub, input.taxRate);
+  const profitRub = calculateProfitRub(retailPriceRub, totalCostRub, taxRub);
+  const marginRate = calculateMarginRate(profitRub, retailPriceRub);
+
+  currentState.output = {
+    purchaseRub,
+    cargoCostRub,
+    insuranceRub,
+    totalCostRub,
+    retailPriceRub,
+    taxRub,
+    profitRub,
+    marginRate
+  };
+
+  const isValid = isScenarioValid(input);
   currentState.ui.hasValidCalculation = isValid;
-  
-  if (isValid) {
-    // Run all calculations
-    const outputs = calculateAll(currentState.input);
-    currentState.output = outputs;
-  } else {
-    // Clear outputs if scenario is invalid
-    currentState.output = { ...initialOutputState };
-  }
-  
-  // Update step completion and unlocking
+
   updateStepProgression();
 }
 
@@ -410,6 +438,7 @@ export function expandStep(stepNum) {
  * Gets the current calculation summary for display
  * @returns {Object} - Summary data
  */
+export function getCalculationSummary() {
   const { input, output, ui } = currentState;
   
   // Find the main cost driver

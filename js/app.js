@@ -350,6 +350,13 @@ function handleReset() {
       if (input) input.value = '';
     });
     
+    // Collapse results section
+    const resultsPanel = elements.resultsPanel;
+    if (resultsPanel) {
+      resultsPanel.classList.remove('expanded');
+      resultsPanel.classList.add('collapsed');
+    }
+    
     showToast('Данные очищены');
   }
 }
@@ -494,6 +501,41 @@ function render(state) {
     }
   });
   
+  // Sync markup slider with state
+  const markupRange = document.getElementById('markup-range');
+  const markupFill = document.querySelector('#markup-slider .slider-fill');
+  const markupThumb = document.querySelector('#markup-slider .slider-thumb');
+  if (input.markupRate !== null && markupRange) {
+    const pct = Math.min(300, Math.max(0, (input.markupRate || 0) * 100));
+    markupRange.value = pct;
+    if (markupFill) markupFill.style.width = `${(pct / 300) * 100}%`;
+    if (markupThumb) markupThumb.style.left = `${(pct / 300) * 100}%`;
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.value) === pct);
+    });
+  }
+  
+  // Sync tax segmented control with state
+  const taxRate = input.taxRate;
+  if (taxRate !== null) {
+    const taxBtns = document.querySelectorAll('#tax-control .segment-btn');
+    const knownRates = [0.06, 0.07, 0.15, 0.20];
+    const isKnown = knownRates.includes(taxRate);
+    taxBtns.forEach(btn => {
+      const btnVal = parseFloat(btn.dataset.value);
+      const isCustom = btn.dataset.custom === 'true';
+      btn.classList.toggle('active', isKnown && btnVal === taxRate);
+    });
+    const customContainer = document.getElementById('custom-tax-container');
+    if (customContainer) {
+      customContainer.style.display = isKnown ? 'none' : 'block';
+      if (!isKnown && taxRate !== null) {
+        const customInput = document.getElementById('tax-rate-custom');
+        if (customInput) customInput.value = Math.round(taxRate * 10000) / 100;
+      }
+    }
+  }
+  
   // Update error messages
   Object.entries(elements.errors).forEach(([fieldId, errorEl]) => {
     if (!errorEl) return;
@@ -573,6 +615,14 @@ function render(state) {
   
   // Update step panel states based on current state
   updateStepPanelStates(input, output, ui);
+  
+  // Auto-expand results section when there are computed values
+  const hasAnyResult = output.purchaseRub !== null;
+  const resultsPanel = elements.resultsPanel;
+  if (resultsPanel && hasAnyResult && resultsPanel.classList.contains('collapsed') && !resultsPanel.classList.contains('locked')) {
+    resultsPanel.classList.remove('collapsed');
+    resultsPanel.classList.add('expanded');
+  }
 }
 
 /**
@@ -617,14 +667,14 @@ function updateStepPanelStates(input, output, ui) {
     elements.stepConnectors[1]?.classList.toggle('completed', step2Complete);
   }
   
-  // Unlock step 4
+  // Unlock step 4 once steps 1+2 are done (step 3 has no required fields)
   const panel4 = elements.stepPanels[4];
-  if (panel4 && step3Complete) {
+  if (panel4 && step2Complete) {
     panel4.classList.remove('locked');
     panel4.classList.toggle('completed', step4Complete);
     elements.stepIndicators[3]?.classList.remove('locked');
     elements.stepIndicators[3]?.classList.toggle('completed', step4Complete);
-    elements.stepConnectors[2]?.classList.toggle('completed', step3Complete);
+    elements.stepConnectors[2]?.classList.toggle('completed', step2Complete);
   }
   
   // Update step summaries

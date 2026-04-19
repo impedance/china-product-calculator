@@ -131,17 +131,17 @@ export function calculateTotalCostRub({
   reworkRub,
   packagingRub
 }) {
-  // All components must be valid numbers
-  if (!isValidNonNegativeNumber(purchaseRub) ||
-      !isValidNonNegativeNumber(chinaDeliveryRub) ||
-      !isValidNonNegativeNumber(cargoCostRub) ||
-      !isValidNonNegativeNumber(insuranceRub) ||
-      !isValidNonNegativeNumber(reworkRub) ||
-      !isValidNonNegativeNumber(packagingRub)) {
+  if (!isValidNonNegativeNumber(purchaseRub)) {
     return null;
   }
   
-  const result = purchaseRub + chinaDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub;
+  const delivery = chinaDeliveryRub || 0;
+  const cargo = cargoCostRub || 0;
+  const insurance = insuranceRub || 0;
+  const rework = reworkRub || 0;
+  const packaging = packagingRub || 0;
+  
+  const result = purchaseRub + delivery + cargo + insurance + rework + packaging;
   return Number.isFinite(result) ? result : null;
 }
 
@@ -244,16 +244,16 @@ export function calculateAll(input) {
   );
   
   // Step 3: Calculate insurance
-  const insuranceRub = calculateInsuranceRub(purchaseRub, input.insuranceRate);
+  const insuranceRub = calculateInsuranceRub(purchaseRub, input.insuranceRate || 0);
   
-  // Step 4: Calculate total cost (requires all components)
+  // Step 4: Calculate total cost (optional fields default to 0)
   const totalCostRub = calculateTotalCostRub({
     purchaseRub,
-    chinaDeliveryRub: input.chinaDeliveryRub,
+    chinaDeliveryRub: input.chinaDeliveryRub || 0,
     cargoCostRub,
     insuranceRub,
-    reworkRub: input.reworkRub,
-    packagingRub: input.packagingRub
+    reworkRub: input.reworkRub || 0,
+    packagingRub: input.packagingRub || 0
   });
   
   // Step 5: Calculate retail price
@@ -288,13 +288,9 @@ export function getRequiredFields() {
   return [
     'unitPriceCny',
     'cnyRubRate',
-    'chinaDeliveryRub',
     'cargoRateUsdPerKg',
     'usdRubRate',
     'unitWeightKg',
-    'insuranceRate',
-    'reworkRub',
-    'packagingRub',
     'markupRate',
     'taxRate'
   ];

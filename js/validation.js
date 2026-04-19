@@ -20,15 +20,18 @@ export function validateField(fieldId, value) {
   // Fields that must be non-negative (>= 0)
   const nonNegativeFields = [
     'unitPriceCny',
-    'chinaDeliveryRub',
-    'densityKgM3',
     'cargoRateUsdPerKg',
     'unitWeightKg',
-    'insuranceRate',
-    'reworkRub',
-    'packagingRub',
     'markupRate',
     'taxRate'
+  ];
+  
+  // Optional fields with defaults (validate only if filled)
+  const optionalFields = [
+    'chinaDeliveryRub',
+    'insuranceRate',
+    'reworkRub',
+    'packagingRub'
   ];
   
   // Text fields (no numeric validation needed)
@@ -45,6 +48,14 @@ export function validateField(fieldId, value) {
     const requiredFields = getRequiredFields();
     if (requiredFields.includes(fieldId)) {
       return { isValid: false, error: 'Обязательное поле' };
+    }
+    return { isValid: true, error: null };
+  }
+  
+  // Optional fields: validate only if filled
+  if (optionalFields.includes(fieldId)) {
+    if (Number.isNaN(numericValue) || numericValue < 0) {
+      return { isValid: false, error: 'Значение должно быть 0 или больше' };
     }
     return { isValid: true, error: null };
   }
@@ -90,8 +101,8 @@ export function validateAllFields(input) {
   }
   
   // Check optional fields if they have values
-  const optionalFields = ['productName', 'sku', 'densityKgM3'];
-  for (const fieldId of optionalFields) {
+  const optionalFieldsList = ['productName', 'sku', 'densityKgM3', 'chinaDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
+  for (const fieldId of optionalFieldsList) {
     if (input[fieldId] !== null && input[fieldId] !== undefined && input[fieldId] !== '') {
       results[fieldId] = validateField(fieldId, input[fieldId]);
     }
