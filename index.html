@@ -291,7 +291,8 @@
         <div class="form-group">
           <label class="form-label" for="tax-rate">Налоги</label>
           <div class="segmented-control" id="tax-control">
-            <button class="segment-btn active" data-value="0.06">6% УСН</button>
+            <button class="segment-btn active" data-value="0">0%</button>
+            <button class="segment-btn" data-value="0.06">6% УСН</button>
             <button class="segment-btn" data-value="0.07">7% АУСН</button>
             <button class="segment-btn" data-value="0.15">15% УСН</button>
             <button class="segment-btn" data-value="0.20">20% ОСНО</button>
@@ -303,7 +304,7 @@
               <span class="input-unit">%</span>
             </div>
           </div>
-          <input type="hidden" id="tax-rate" value="0.06">
+          <input type="hidden" id="tax-rate" value="0">
           <div class="form-error" id="error-tax-rate" style="display: none;"></div>
         </div>
       </div>

@@ -29,7 +29,7 @@ const initialInputState = {
   reworkRub: null,
   packagingRub: null,
   markupRate: 1,
-  taxRate: 0.06
+  taxRate: 0
 };
 
 const initialOutputState = {

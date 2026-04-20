@@ -503,7 +503,7 @@ function render(state) {
   const taxRate = input.taxRate;
   if (taxRate !== null) {
     const taxBtns = document.querySelectorAll('#tax-control .segment-btn');
-    const knownRates = [0.06, 0.07, 0.15, 0.20];
+    const knownRates = [0, 0.06, 0.07, 0.15, 0.20];
     const isKnown = knownRates.includes(taxRate);
     taxBtns.forEach(btn => {
       const btnVal = parseFloat(btn.dataset.value);
