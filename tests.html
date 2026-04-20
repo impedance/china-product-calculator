@@ -173,7 +173,7 @@
           insuranceRate: 3.7,
           reworkRub: 50,
           packagingRub: 30,
-          markupRate: 100,
+          markupRate: 1.0,  // 100% markup as decimal
           taxRate: 6
         };
         
@@ -225,7 +225,7 @@
           insuranceRate: 0,
           reworkRub: 50,
           packagingRub: 30,
-          markupRate: 100,
+          markupRate: 1.0,  // 100% markup as decimal
           taxRate: 0
         };
         
@@ -247,7 +247,7 @@
           insuranceRate: 0,
           reworkRub: 50,
           packagingRub: 30,
-          markupRate: 0,
+          markupRate: 0,  // 0% markup
           taxRate: 6
         };
         
@@ -291,7 +291,7 @@
           insuranceRate: 3.7,
           reworkRub: 50,
           packagingRub: 30,
-          markupRate: 100,
+          markupRate: 1.0,  // 100% markup as decimal
           taxRate: 6
         };
         
@@ -363,6 +363,29 @@
         assertFalse(result.isValid, 'Empty required field should fail');
       });
       
+      // TC-11: Markup > 100% bug fix
+      group('TC-11: Markup > 100% bug fix');
+      test('Markup 85% - correct calculation', () => {
+        const totalCost = 100;
+        const retail = formulas.calculateRetailPriceRub(totalCost, 0.85);  // 85% markup
+        assertEqual(retail, 185, '85% markup should give 185');
+      });
+      test('Markup 110% - correct calculation', () => {
+        const totalCost = 100;
+        const retail = formulas.calculateRetailPriceRub(totalCost, 1.10);  // 110% markup
+        assertEqual(retail, 210, '110% markup should give 210');
+      });
+      test('Markup 200% - correct calculation', () => {
+        const totalCost = 100;
+        const retail = formulas.calculateRetailPriceRub(totalCost, 2.0);  // 200% markup
+        assertEqual(retail, 300, '200% markup should give 300');
+      });
+      test('Markup 300% - correct calculation', () => {
+        const totalCost = 100;
+        const retail = formulas.calculateRetailPriceRub(totalCost, 3.0);  // 300% markup
+        assertEqual(retail, 400, '300% markup should give 400');
+      });
+      
       // Example B tests
       group('Example B: Alternative scenario');
       test('Example B calculations match expected values', () => {
@@ -375,7 +398,7 @@
           insuranceRate: 3,
           reworkRub: 40,
           packagingRub: 25,
-          markupRate: 80,
+          markupRate: 0.8,  // 80% markup as decimal
           taxRate: 6
         };
         

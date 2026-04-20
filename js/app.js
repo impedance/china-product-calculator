@@ -51,8 +51,7 @@ import {
 } from './progressive-ui.js';
 
 import {
-  fetchCnyRate,
-  formatEffectiveDate
+  fetchCnyRate
 } from './exchange-rate.js';
 
 // DOM element references
@@ -156,14 +155,22 @@ function setupEventListeners() {
     
     input.addEventListener('input', (e) => {
       const value = e.target.value;
-      const parsedValue = parseNumber(value);
+      // markupRate is entered as percent (50) but stored as decimal (0.5)
+      let parsedValue = parseNumber(value);
+      if (fieldId === 'markupRate' && parsedValue !== null) {
+        parsedValue = parsedValue / 100;
+      }
       updateInput({ [fieldId]: parsedValue });
     });
     
     // Handle blur for validation display
     input.addEventListener('blur', (e) => {
       const value = e.target.value;
-      const parsedValue = parseNumber(value);
+      // markupRate is entered as percent (50) but stored as decimal (0.5)
+      let parsedValue = parseNumber(value);
+      if (fieldId === 'markupRate' && parsedValue !== null) {
+        parsedValue = parsedValue / 100;
+      }
       updateInput({ [fieldId]: parsedValue });
     });
   });
@@ -509,13 +516,18 @@ function showToast(message, type = 'default') {
 function render(state) {
   const { input, output, ui } = state;
   
-  // Update input fields (only if not focused to avoid cursor jumping)
+    // Update input fields (only if not focused to avoid cursor jumping)
   Object.entries(elements.inputs).forEach(([fieldId, inputEl]) => {
     if (!inputEl || document.activeElement === inputEl) return;
     
     const value = input[fieldId];
     if (value !== null && value !== undefined) {
-      inputEl.value = value;
+      // markupRate is stored as decimal (0.5) but displayed as percent (50)
+      if (fieldId === 'markupRate') {
+        inputEl.value = Math.round(value * 100);
+      } else {
+        inputEl.value = value;
+      }
     } else {
       inputEl.value = '';
     }
@@ -526,7 +538,8 @@ function render(state) {
   const markupFill = document.querySelector('#markup-slider .slider-fill');
   const markupThumb = document.querySelector('#markup-slider .slider-thumb');
   if (input.markupRate !== null && markupRange) {
-    const pct = Math.min(300, Math.max(0, (input.markupRate || 0) * 100));
+    // markupRate is stored as decimal, slider works with percent (0-300)
+    const pct = Math.min(300, Math.max(0, Math.round((input.markupRate || 0) * 100)));
     markupRange.value = pct;
     if (markupFill) markupFill.style.width = `${(pct / 300) * 100}%`;
     if (markupThumb) markupThumb.style.left = `${(pct / 300) * 100}%`;
@@ -871,18 +884,39 @@ async function loadExchangeRate() {
 
 /**
  * Update the rate source indicator in UI
+ * Format: "Курс валюты" or "Курс валюты на DD.MM.YYYY" if data is from today
  */
 function updateRateSourceIndicator(result) {
   const indicator = document.getElementById('rate-source');
   if (!indicator) return;
-  
-  if (result.source === 'CBR' || result.source === 'CBR (cached)') {
-    const date = formatEffectiveDate(result.effectiveDate);
-    const staleText = result.stale ? ' (устаревший)' : '';
-    indicator.textContent = `Курс ЦБ РФ${date ? ' на ' + date : ''}${staleText}`;
+
+  // Format date as DD.MM.YYYY if available
+  let formattedDate = '';
+  if (result.effectiveDate) {
+    try {
+      const date = new Date(result.effectiveDate);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      formattedDate = `${day}.${month}.${year}`;
+    } catch (e) {
+      formattedDate = '';
+    }
+  }
+
+  // Show date only if data is from today
+  if (result.isToday && formattedDate) {
+    indicator.textContent = `Курс валюты на ${formattedDate}`;
+  } else {
+    indicator.textContent = 'Курс валюты';
+  }
+
+  // Set CSS class based on source for styling
+  if (result.source === 'MOEX' || result.source === 'MOEX (cached)') {
+    indicator.className = 'rate-source moex';
+  } else if (result.source === 'CBR' || result.source === 'CBR (cached)' || result.source === 'CBR (stale)') {
     indicator.className = 'rate-source cbr';
-  } else if (result.source === 'default') {
-    indicator.textContent = 'Дефолтный курс';
+  } else {
     indicator.className = 'rate-source default';
   }
 }

@@ -77,9 +77,9 @@ function calculateTotalCostRub(costs) {
 
 function calculateRetailPriceRub(totalCostRub, markupRate) {
   if (totalCostRub === null || markupRate === null || totalCostRub < 0) return null;
-  const rate = normalizePercent(markupRate);
-  if (rate === null || rate < 0) return null;
-  return totalCostRub * (1 + rate);
+  // markupRate should already be in decimal form (UI converts percent to decimal)
+  if (markupRate < 0) return null;
+  return totalCostRub * (1 + markupRate);
 }
 
 function calculateTaxRub(retailPriceRub, taxRate) {
@@ -134,7 +134,7 @@ test('Total cost calculation', () => {
 });
 
 test('Retail price calculation', () => {
-  const result = calculateRetailPriceRub(1682.20, 100);
+  const result = calculateRetailPriceRub(1682.20, 1.0);  // 100% markup as decimal
   assertEqual(result, 3364.40, 'Retail should be 3364.40');
 });
 
@@ -186,6 +186,26 @@ test('Zero markup', () => {
   assertEqual(result, 1000);
 });
 
+test('Markup 85% - correct calculation', () => {
+  const result = calculateRetailPriceRub(100, 0.85);  // 85% markup
+  assertEqual(result, 185, '85% markup should give 185');
+});
+
+test('Markup 110% - correct calculation (bug fix)', () => {
+  const result = calculateRetailPriceRub(100, 1.10);  // 110% markup
+  assertEqual(result, 210, '110% markup should give 210');
+});
+
+test('Markup 200% - correct calculation', () => {
+  const result = calculateRetailPriceRub(100, 2.0);  // 200% markup
+  assertEqual(result, 300, '200% markup should give 300');
+});
+
+test('Markup 300% - correct calculation', () => {
+  const result = calculateRetailPriceRub(100, 3.0);  // 300% markup
+  assertEqual(result, 400, '300% markup should give 400');
+});
+
 test('Safe division - zero retail', () => {
   const result = calculateMarginRate(100, 0);
   assertEqual(result, 0);
@@ -215,7 +235,7 @@ test('Example B full calculation', () => {
     reworkRub: 40,
     packagingRub: 25
   });
-  const retail = calculateRetailPriceRub(total, 80);
+  const retail = calculateRetailPriceRub(total, 0.8);  // 80% markup as decimal
   const tax = calculateTaxRub(retail, 6);
   const profit = calculateProfitRub(retail, total, tax);
   const margin = calculateMarginRate(profit, retail);

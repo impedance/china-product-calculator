@@ -147,9 +147,9 @@ export function calculateTotalCostRub({
 
 /**
  * Calculates retail price in RUB
- * Formula: retailPriceRub = totalCostRub * (1 + markupRateNormalized)
+ * Formula: retailPriceRub = totalCostRub * (1 + markupRate)
  * @param {number|null} totalCostRub - Total cost in RUB
- * @param {number|null} markupRate - Markup rate (will be normalized)
+ * @param {number|null} markupRate - Markup rate as decimal (e.g., 0.85 for 85%, 1.10 for 110%)
  * @returns {number|null} - Retail price in RUB or null if inputs invalid
  */
 export function calculateRetailPriceRub(totalCostRub, markupRate) {
@@ -157,12 +157,13 @@ export function calculateRetailPriceRub(totalCostRub, markupRate) {
     return null;
   }
   
-  const normalizedRate = normalizePercent(markupRate);
-  if (normalizedRate === null) {
+  // markupRate should already be in decimal form (UI converts percent to decimal)
+  // Validate it's a non-negative number
+  if (!isValidNonNegativeNumber(markupRate)) {
     return null;
   }
   
-  const result = totalCostRub * (1 + normalizedRate);
+  const result = totalCostRub * (1 + markupRate);
   return Number.isFinite(result) ? result : null;
 }
 
