@@ -42,7 +42,7 @@ export function initProgressiveUI() {
   setupInlinePreviews();
   
   // Push default control values into state
-  updateInput({ markupRate: 1, taxRate: 0.06, insuranceRate: 0 });
+  updateInput({ markupRate: 1, taxRate: 0, insuranceRate: 0 });
   
   // Subscribe to state changes
   subscribe(updateUI);

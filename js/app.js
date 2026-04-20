@@ -398,38 +398,74 @@ function showMissingFieldsSheet(missingFields) {
 }
 
 /**
- * Show help content in bottom sheet
+ * Show instruction content in bottom sheet
  */
 function showHelpSheet() {
   if (!elements.sheetTitle || !elements.sheetContent) return;
   
-  elements.sheetTitle.textContent = 'Справка';
+  elements.sheetTitle.textContent = 'Как пользоваться';
   
   elements.sheetContent.innerHTML = `
-    <div class="help-content">
-      <p><strong>Формулы расчёта:</strong></p>
-      <ul>
-        <li>Закупка в ₽ = Цена (CNY) × Курс CNY/RUB</li>
-        <li>Стоимость карго = Вес × Ставка (¥/кг) × Курс CNY/RUB</li>
-        <li>Страховка = Закупка × Страховка %</li>
-        <li>Себестоимость = Закупка + Доставка по Китаю + Карго + Страховка + Переработка + Упаковка</li>
-        <li>Цена продажи = Себестоимость × (1 + Наценка %)</li>
-        <li>Налоги = Цена продажи × Налог %</li>
-        <li>Прибыль = Цена продажи − Себестоимость − Налоги</li>
-        <li>Маржа = Прибыль / Цена продажи</li>
-      </ul>
+    <div class="instruction-content">
+      <div class="instruction-step">
+        <div class="instruction-step-header">
+          <span class="instruction-step-icon">💱</span>
+          <span class="instruction-step-title">Курс валют</span>
+        </div>
+        <div class="instruction-step-desc">
+          Автоматически подгружается курс ЦБ РФ. Можно ввести свой курс CNY/RUB.
+        </div>
+      </div>
       
-      <p><strong>Процентные поля:</strong></p>
-      <ul>
-        <li>Можно ввести <code>6</code> или <code>0.06</code> — оба варианта равны 6%</li>
-        <li>Можно ввести <code>100</code> или <code>1.0</code> — оба варианта равны 100%</li>
-      </ul>
+      <div class="instruction-step">
+        <div class="instruction-step-header">
+          <span class="instruction-step-icon">💰</span>
+          <span class="instruction-step-title">Шаг 1: Закупка</span>
+        </div>
+        <div class="instruction-step-desc">
+          Введите цену товара в юанях (¥). Поле обязательное — без него не рассчитается закупочная стоимость.
+        </div>
+      </div>
       
-      <p><strong>Примечания:</strong></p>
-      <ul>
-        <li>Плотность (кг/м³) сохраняется, но не используется в расчётах MVP</li>
-        <li>Все данные сохраняются локально в браузере</li>
-      </ul>
+      <div class="instruction-step">
+        <div class="instruction-step-header">
+          <span class="instruction-step-icon">🚚</span>
+          <span class="instruction-step-title">Шаг 2: Логистика</span>
+        </div>
+        <div class="instruction-step-desc">
+          Укажите вес единицы (кг) и ставку карго (¥/кг). Доставка по Китаю — опционально.
+        </div>
+      </div>
+      
+      <div class="instruction-step">
+        <div class="instruction-step-header">
+          <span class="instruction-step-icon">📦</span>
+          <span class="instruction-step-title">Шаг 3: Доп. расходы</span>
+        </div>
+        <div class="instruction-step-desc">
+          Страховка (выберите % на слайдере), переработка/брак, упаковка/маркировка — все поля опциональны.
+        </div>
+      </div>
+      
+      <div class="instruction-step">
+        <div class="instruction-step-header">
+          <span class="instruction-step-icon">🏷️</span>
+          <span class="instruction-step-title">Шаг 4: Продажа</span>
+        </div>
+        <div class="instruction-step-desc">
+          Установите наценку (слайдер или ввод %). Выберите налоговый режим: 0% (по умолчанию), 6% УСН, 7% АУСН, 15% УСН или 20% ОСНО.
+        </div>
+      </div>
+      
+      <div class="instruction-tips">
+        <div class="instruction-tips-title">💡 Полезные фичи</div>
+        <ul class="instruction-tips-list">
+          <li><strong>Примеры A/B</strong> — быстрое заполнение тестовыми данными</li>
+          <li><strong>↻ рядом с полем</strong> — загрузить последнее введённое значение</li>
+          <li><strong>Автосохранение</strong> — данные не пропадут при закрытии страницы</li>
+          <li><strong>Цифры сверху</strong> — итоговые показатели обновляются автоматически</li>
+        </ul>
+      </div>
     </div>
   `;
   
@@ -508,10 +544,12 @@ function render(state) {
     taxBtns.forEach(btn => {
       const btnVal = parseFloat(btn.dataset.value);
       const isCustom = btn.dataset.custom === 'true';
-      btn.classList.toggle('active', isKnown && btnVal === taxRate);
+      // Active button: either known rate matches, or custom is selected for unknown rate
+      btn.classList.toggle('active', (isKnown && btnVal === taxRate) || (!isKnown && isCustom));
     });
     const customContainer = document.getElementById('custom-tax-container');
     if (customContainer) {
+      // Show custom input only for custom (non-known) rates
       customContainer.style.display = isKnown ? 'none' : 'block';
       if (!isKnown && taxRate !== null) {
         const customInput = document.getElementById('tax-rate-custom');
