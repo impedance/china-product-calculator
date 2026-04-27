@@ -11,7 +11,9 @@ import {
   calculateRetailPriceRub,
   calculateTaxRub,
   calculateProfitRub,
-  calculateMarginRate
+  calculateMarginRate,
+  calculateTotalRevenue,
+  calculateBatchProfit
 } from './formulas.js';
 import { validateAllFields, isScenarioValid } from './validation.js';
 
@@ -29,7 +31,8 @@ const initialInputState = {
   reworkRub: null,
   packagingRub: null,
   markupRate: 1,
-  taxRate: 0
+  taxRate: 0,
+  quantity: null
 };
 
 const initialOutputState = {
@@ -40,7 +43,9 @@ const initialOutputState = {
   retailPriceRub: null,
   taxRub: null,
   profitRub: null,
-  marginRate: null
+  marginRate: null,
+  totalRevenue: null,
+  batchProfit: null
 };
 
 const initialUiState = {
@@ -173,6 +178,8 @@ export function recalculate() {
   const taxRub = calculateTaxRub(retailPriceRub, input.taxRate);
   const profitRub = calculateProfitRub(retailPriceRub, totalCostRub, taxRub);
   const marginRate = calculateMarginRate(profitRub, retailPriceRub);
+  const totalRevenue = calculateTotalRevenue(input.quantity, retailPriceRub);
+  const batchProfit = calculateBatchProfit(input.quantity, profitRub);
 
   currentState.output = {
     purchaseRub,
@@ -182,7 +189,9 @@ export function recalculate() {
     retailPriceRub,
     taxRub,
     profitRub,
-    marginRate
+    marginRate,
+    totalRevenue,
+    batchProfit
   };
 
   const isValid = isScenarioValid(input);

@@ -100,6 +100,34 @@ function calculateMarginRate(profitRub, retailPriceRub) {
   return profitRub / retailPriceRub;
 }
 
+function isValidPositiveNumber(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return false;
+  if (typeof value !== 'number') return false;
+  return value > 0;
+}
+
+function isValidNonNegativeNumber(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return false;
+  if (typeof value !== 'number') return false;
+  return value >= 0;
+}
+
+function calculateTotalRevenue(quantity, retailPriceRub) {
+  if (!isValidPositiveNumber(quantity) || !isValidNonNegativeNumber(retailPriceRub)) {
+    return null;
+  }
+  const result = quantity * retailPriceRub;
+  return Number.isFinite(result) ? result : null;
+}
+
+function calculateBatchProfit(quantity, profitPerUnit) {
+  if (!isValidPositiveNumber(quantity) || !isValidNonNegativeNumber(profitPerUnit)) {
+    return null;
+  }
+  const result = quantity * profitPerUnit;
+  return Number.isFinite(result) ? result : null;
+}
+
 // TC-01: Example A
 console.log('--- TC-01: Spreadsheet baseline (Example A) ---');
 test('Purchase calculation', () => {
@@ -325,6 +353,42 @@ test('Empty date returns empty string', () => {
   if (result !== '') {
     throw new Error(`Expected '', got '${result}'`);
   }
+});
+
+// TC-11: calculateTotalRevenue
+console.log('\n--- TC-11: calculateTotalRevenue ---');
+test('calculateTotalRevenue: quantity × retail price', () => {
+  const result = calculateTotalRevenue(500, 3364.40);
+  assertEqual(result, 1682200, 1);
+});
+
+test('calculateTotalRevenue: null for invalid quantity', () => {
+  const r1 = calculateTotalRevenue(0, 3364.40);
+  const r2 = calculateTotalRevenue(null, 3364.40);
+  const r3 = calculateTotalRevenue(-10, 3364.40);
+  if (r1 !== null || r2 !== null || r3 !== null) {
+    throw new Error('Expected null for invalid quantity');
+  }
+});
+
+test('calculateTotalRevenue: null for negative price', () => {
+  const result = calculateTotalRevenue(500, -100);
+  assertNull(result);
+});
+
+// TC-12: calculateBatchProfit
+console.log('\n--- TC-12: calculateBatchProfit ---');
+test('calculateBatchProfit: returns null when quantity is 0 or null', () => {
+  const r1 = calculateBatchProfit(0, 1480);
+  const r2 = calculateBatchProfit(null, 1480);
+  if (r1 !== null || r2 !== null) {
+    throw new Error('Expected null for zero/null quantity');
+  }
+});
+
+test('calculateBatchProfit: correct calculation', () => {
+  const result = calculateBatchProfit(500, 1480);
+  assertEqual(result, 740000, 1);
 });
 
 // Summary

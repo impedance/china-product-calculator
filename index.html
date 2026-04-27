@@ -43,6 +43,19 @@
       </div>
     </header>
 
+    <!-- Tab Navigation -->
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn tab-btn--active" role="tab" data-tab="calculator" aria-selected="true">
+        Калькулятор
+      </button>
+      <button class="tab-btn" role="tab" data-tab="summary" aria-selected="false">
+        Свод
+      </button>
+    </nav>
+
+    <!-- Tab Panels -->
+    <div id="tab-calculator" class="tab-panel" role="tabpanel">
+
     <!-- KPI Section (Sticky) -->
     <section class="kpi-section">
       <div class="kpi-grid">
@@ -65,6 +78,14 @@
         <div class="kpi-card full-width" id="kpi-taxes">
           <div class="kpi-label">Налоги</div>
           <div class="kpi-value cost empty">—</div>
+        </div>
+        <div class="kpi-card" id="kpi-total-revenue">
+          <div class="kpi-label">Выручка всего</div>
+          <div class="kpi-value empty">—</div>
+        </div>
+        <div class="kpi-card" id="kpi-batch-profit">
+          <div class="kpi-label">Прибыль всего</div>
+          <div class="kpi-value profit empty">—</div>
         </div>
       </div>
     </section>
@@ -310,6 +331,15 @@
           <input type="hidden" id="tax-rate" value="0">
           <div class="form-error" id="error-tax-rate" style="display: none;"></div>
         </div>
+
+        <!-- Quantity field -->
+        <div class="form-group">
+          <label class="form-label" for="quantity">Количество единиц</label>
+          <div class="input-wrapper">
+            <input type="number" class="form-input" id="quantity" placeholder="например, 500" min="1" step="1">
+          </div>
+          <div class="form-hint">Для расчёта выручки и прибыли партии</div>
+        </div>
       </div>
     </div>
 
@@ -372,6 +402,49 @@
           </div>
         </div>
       </div>
+    </div>
+    </div><!-- end tab-calculator -->
+
+    <!-- Tab 2: Summary -->
+    <div id="tab-summary" class="tab-panel tab-panel--hidden" role="tabpanel">
+      <div class="summary-header">
+        <h2 class="summary-title">Свод по товарам</h2>
+        <button class="btn btn-primary" id="btn-add-from-calc">
+          + Добавить из калькулятора
+        </button>
+        <button class="btn btn-secondary" id="btn-add-empty-row">
+          + Добавить строку
+        </button>
+      </div>
+
+      <div class="summary-table-wrap">
+        <table class="summary-table" id="summary-table">
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Кол-во</th>
+              <th>Себест. ед. ₽</th>
+              <th>Общие затраты ₽</th>
+              <th>Розн. цена ед. ₽</th>
+              <th>Прибыль ед. ₽</th>
+              <th>Выручка всего ₽</th>
+              <th>Прибыль всего ₽</th>
+              <th>Маржа %</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="summary-tbody">
+            <!-- rows rendered by JS -->
+          </tbody>
+          <tfoot id="summary-tfoot">
+            <!-- ИТОГО row rendered by JS -->
+          </tfoot>
+        </table>
+      </div>
+
+      <p class="summary-empty" id="summary-empty-msg">
+        Добавьте товары, чтобы увидеть сводку
+      </p>
     </div>
 
     <!-- Action Strip -->

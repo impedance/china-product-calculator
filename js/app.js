@@ -15,7 +15,8 @@ import {
   isStepComplete,
   unlockStep,
   completeStep,
-  expandStep
+  expandStep,
+  getState
 } from './state.js';
 
 import { 
@@ -54,6 +55,10 @@ import {
   fetchCnyRate
 } from './exchange-rate.js';
 
+import {
+  getRows, addRow, deleteRow, updateRow, getTotals, loadFromStorage, subscribe as subscribeSummary
+} from './summary-state.js';
+
 // DOM element references
 const elements = {};
 
@@ -77,6 +82,8 @@ function cacheElements() {
   elements.kpiProfit = document.getElementById('kpi-profit');
   elements.kpiMargin = document.getElementById('kpi-margin');
   elements.kpiTaxes = document.getElementById('kpi-taxes');
+  elements.kpiTotalRevenue = document.getElementById('kpi-total-revenue');
+  elements.kpiBatchProfit = document.getElementById('kpi-batch-profit');
   
   // Input fields
   elements.inputs = {
@@ -92,7 +99,8 @@ function cacheElements() {
     reworkRub: document.getElementById('rework-rub'),
     packagingRub: document.getElementById('packaging-rub'),
     markupRate: document.getElementById('markup-rate'),
-    taxRate: document.getElementById('tax-rate')
+    taxRate: document.getElementById('tax-rate'),
+    quantity: document.getElementById('quantity')
   };
   
   // Error messages
@@ -173,6 +181,12 @@ function setupEventListeners() {
       }
       updateInput({ [fieldId]: parsedValue });
     });
+  });
+  
+  // Quantity input - special handling for integer values
+  elements.inputs.quantity?.addEventListener('input', (e) => {
+    const raw = parseFloat(e.target.value);
+    setInputField('quantity', Number.isNaN(raw) ? null : Math.floor(raw));
   });
   
   // Button listeners
@@ -525,6 +539,8 @@ function render(state) {
       // markupRate is stored as decimal (0.5) but displayed as percent (50)
       if (fieldId === 'markupRate') {
         inputEl.value = Math.round(value * 100);
+      } else if (fieldId === 'quantity') {
+        inputEl.value = Math.floor(value);
       } else {
         inputEl.value = value;
       }
@@ -598,6 +614,12 @@ function render(state) {
   
   updateKpiCard(elements.kpiTaxes, output.taxRub, formatRub, 'cost');
   
+  const totalRevenueClass = (output.totalRevenue || 0) >= 0 ? 'profit' : '';
+  updateKpiCard(elements.kpiTotalRevenue, output.totalRevenue, formatRub, totalRevenueClass);
+  
+  const batchProfitClass = (output.batchProfit || 0) >= 0 ? 'profit' : '';
+  updateKpiCard(elements.kpiBatchProfit, output.batchProfit, formatRub, batchProfitClass);
+   
   // Update result details
   if (elements.results.purchaseRub) {
     elements.results.purchaseRub.textContent = formatRub(output.purchaseRub);
@@ -800,6 +822,76 @@ function updateBreakdownVisualization() {
   });
 }
 
+function formatNum(v) {
+  if (v == null || !Number.isFinite(v)) return '—';
+  return v.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+}
+
+function renderSummary() {
+  const rows = getRows();
+  const totals = getTotals();
+  const tbody = document.getElementById('summary-tbody');
+  const tfoot = document.getElementById('summary-tfoot');
+  const emptyMsg = document.getElementById('summary-empty-msg');
+
+  if (!tbody || !tfoot) return;
+
+  if (emptyMsg) emptyMsg.style.display = rows.length === 0 ? 'block' : 'none';
+
+  tbody.innerHTML = rows.map(row => {
+    const totalCost = row.quantity * row.unitCost;
+    const totalRevenue = row.quantity * row.retailPrice;
+    const totalProfit = row.quantity * row.profitPerUnit;
+    const margin = totalRevenue > 0 ? (totalProfit / totalRevenue * 100).toFixed(1) : '—';
+
+    return `
+      <tr data-row-id="${row.id}">
+        <td><input class="summary-input" data-field="productName" value="${row.productName}" /></td>
+        <td><input class="summary-input summary-input--num" data-field="quantity" value="${row.quantity}" /></td>
+        <td><input class="summary-input summary-input--num" data-field="unitCost" value="${row.unitCost}" /></td>
+        <td class="summary-computed">${formatNum(totalCost)}</td>
+        <td><input class="summary-input summary-input--num" data-field="retailPrice" value="${row.retailPrice}" /></td>
+        <td><input class="summary-input summary-input--num" data-field="profitPerUnit" value="${row.profitPerUnit}" /></td>
+        <td class="summary-computed">${formatNum(totalRevenue)}</td>
+        <td class="summary-computed">${formatNum(totalProfit)}</td>
+        <td class="summary-computed">${margin}%</td>
+        <td><button class="btn-delete-row" data-row-id="${row.id}" aria-label="Удалить">✕</button></td>
+      </tr>`;
+  }).join('');
+
+  tfoot.innerHTML = `
+    <tr class="summary-totals-row">
+      <td><strong>ИТОГО</strong></td>
+      <td></td>
+      <td></td>
+      <td>${formatNum(totals.totalCost)}</td>
+      <td></td>
+      <td></td>
+      <td>${formatNum(totals.totalRevenue)}</td>
+      <td>${formatNum(totals.totalProfit)}</td>
+      <td>${totals.totalRevenue > 0 ? (totals.margin * 100).toFixed(1) : '—'}%</td>
+      <td></td>
+    </tr>`;
+
+  tbody.querySelectorAll('.btn-delete-row').forEach(btn => {
+    btn.addEventListener('click', () => deleteRow(btn.dataset.rowId));
+  });
+
+  tbody.querySelectorAll('.summary-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const tr = e.target.closest('tr');
+      const rowId = tr?.dataset.rowId;
+      const field = e.target.dataset.field;
+      if (!rowId || !field) return;
+      const numFields = ['quantity', 'unitCost', 'retailPrice', 'profitPerUnit'];
+      const value = numFields.includes(field)
+        ? (parseFloat(e.target.value) || 0)
+        : e.target.value;
+      updateRow(rowId, { [field]: value });
+    });
+  });
+}
+
 /**
  * Initialize the application
  */
@@ -833,6 +925,43 @@ async function init() {
   // Load last used values
   loadLastUsedValues();
   
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.dataset.tab;
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('tab-btn--active', b === btn);
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      });
+
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.toggle('tab-panel--hidden', panel.id !== `tab-${targetTab}`);
+      });
+    });
+  });
+  
+  // Initialize summary state
+  loadFromStorage();
+  subscribeSummary(renderSummary);
+  renderSummary();
+  
+  // Wire up summary buttons
+  document.getElementById('btn-add-from-calc')?.addEventListener('click', () => {
+    const { input, output } = getState();
+    addRow({
+      productName: input.productName || 'Товар',
+      quantity: input.quantity || 0,
+      unitCost: output.totalCostRub || 0,
+      retailPrice: output.retailPriceRub || 0,
+      profitPerUnit: output.profitRub || 0
+    });
+  });
+
+  document.getElementById('btn-add-empty-row')?.addEventListener('click', () => {
+    addRow({ productName: 'Новый товар', quantity: 0, unitCost: 0, retailPrice: 0, profitPerUnit: 0 });
+  });
+    
   // Fetch CNY exchange rate from CBR API
   // This will always update the rate (overriding any saved value)
   await loadExchangeRate();

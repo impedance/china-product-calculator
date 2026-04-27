@@ -297,6 +297,30 @@ export function getRequiredFields() {
 }
 
 /**
+ * Calculates total revenue for a batch
+ * Formula: totalRevenue = quantity * retailPriceRub
+ */
+export function calculateTotalRevenue(quantity, retailPriceRub) {
+  if (!isValidPositiveNumber(quantity) || !isValidNonNegativeNumber(retailPriceRub)) {
+    return null;
+  }
+  const result = quantity * retailPriceRub;
+  return Number.isFinite(result) ? result : null;
+}
+
+/**
+ * Calculates total profit for a batch
+ * Formula: totalBatchProfit = quantity * profitPerUnit
+ */
+export function calculateBatchProfit(quantity, profitPerUnit) {
+  if (!isValidPositiveNumber(quantity) || !isValidNonNegativeNumber(profitPerUnit)) {
+    return null;
+  }
+  const result = quantity * profitPerUnit;
+  return Number.isFinite(result) ? result : null;
+}
+
+/**
  * Gets field labels for display
  * @returns {Object} - Map of field IDs to human-readable labels
  */
