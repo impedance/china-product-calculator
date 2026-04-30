@@ -15,12 +15,12 @@ export function validateField(fieldId, value) {
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
   
   // Fields that must be positive (> 0)
-  const positiveFields = ['cnyRubRate'];
+  const positiveFields = ['usdRubRate'];
   
   // Fields that must be non-negative (>= 0)
   const nonNegativeFields = [
-    'unitPriceCny',
-    'cargoRateCnyPerKg',
+    'unitPriceUsd',
+    'cargoRateUsdPerKg',
     'unitWeightKg',
     'markupRate',
     'taxRate'
@@ -206,11 +206,11 @@ export function getInputElementId(fieldId) {
   const mapping = {
     productName: 'product-name',
     sku: 'sku',
-    unitPriceCny: 'unit-price-cny',
-    cnyRubRate: 'cny-rub-rate',
+    unitPriceUsd: 'unit-price-usd',
+    usdRubRate: 'usd-rub-rate',
     chinaDeliveryRub: 'china-delivery-rub',
     densityKgM3: 'density',
-    cargoRateCnyPerKg: 'cargo-rate-cny',
+    cargoRateUsdPerKg: 'cargo-rate-usd',
     unitWeightKg: 'unit-weight',
     insuranceRate: 'insurance-rate',
     reworkRub: 'rework-rub',
@@ -218,7 +218,7 @@ export function getInputElementId(fieldId) {
     markupRate: 'markup-rate',
     taxRate: 'tax-rate'
   };
-  
+
   return mapping[fieldId] || fieldId;
 }
 
@@ -231,11 +231,11 @@ export function getFieldIdFromElementId(elementId) {
   const mapping = {
     'product-name': 'productName',
     'sku': 'sku',
-    'unit-price-cny': 'unitPriceCny',
-    'cny-rub-rate': 'cnyRubRate',
+    'unit-price-usd': 'unitPriceUsd',
+    'usd-rub-rate': 'usdRubRate',
     'china-delivery-rub': 'chinaDeliveryRub',
     'density': 'densityKgM3',
-    'cargo-rate-cny': 'cargoRateCnyPerKg',
+    'cargo-rate-usd': 'cargoRateUsdPerKg',
     'unit-weight': 'unitWeightKg',
     'insurance-rate': 'insuranceRate',
     'rework-rub': 'reworkRub',
@@ -243,6 +243,6 @@ export function getFieldIdFromElementId(elementId) {
     'markup-rate': 'markupRate',
     'tax-rate': 'taxRate'
   };
-  
+
   return mapping[elementId] || null;
 }

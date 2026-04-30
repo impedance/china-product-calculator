@@ -37,7 +37,7 @@
     <rect x="16" y="264" width="64" height="64" rx="8" opacity="0.8"/>
     <rect x="96" y="264" width="64" height="64" rx="8" opacity="0.8"/>
     <rect x="176" y="264" width="64" height="64" rx="8" opacity="0.8"/>
-    <text x="280" y="340" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="white">¥</text>
+    <text x="280" y="340" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="white">$</text>
   </g>
 </svg>`;
     
@@ -83,12 +83,12 @@
         }
       }
       
-      // Draw yen symbol
+      // Draw dollar symbol
       ctx.fillStyle = 'white';
       ctx.font = `bold ${size * 0.375}px Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('¥', size * 0.7, size * 0.7);
+      ctx.fillText('$', size * 0.7, size * 0.7);
       
       return canvas;
     }

@@ -62,37 +62,37 @@ export function isValidPositiveNumber(value) {
 }
 
 /**
- * Calculates purchase cost in RUB from CNY price
- * Formula: purchaseRub = unitPriceCny * cnyRubRate
- * @param {number|null} unitPriceCny - Unit price in CNY
- * @param {number|null} cnyRubRate - CNY to RUB exchange rate
+ * Calculates purchase cost in RUB from USD price
+ * Formula: purchaseRub = unitPriceUsd * usdRubRate
+ * @param {number|null} unitPriceUsd - Unit price in USD
+ * @param {number|null} usdRubRate - USD to RUB exchange rate
  * @returns {number|null} - Purchase cost in RUB or null if inputs invalid
  */
-export function calculatePurchaseRub(unitPriceCny, cnyRubRate) {
-  if (!isValidNonNegativeNumber(unitPriceCny) || !isValidPositiveNumber(cnyRubRate)) {
+export function calculatePurchaseRub(unitPriceUsd, usdRubRate) {
+  if (!isValidNonNegativeNumber(unitPriceUsd) || !isValidPositiveNumber(usdRubRate)) {
     return null;
   }
-  
-  const result = unitPriceCny * cnyRubRate;
+
+  const result = unitPriceUsd * usdRubRate;
   return Number.isFinite(result) ? result : null;
 }
 
 /**
  * Calculates cargo cost in RUB
- * Formula: cargoCostRub = unitWeightKg * cargoRateCnyPerKg * cnyRubRate
+ * Formula: cargoCostRub = unitWeightKg * cargoRateUsdPerKg * usdRubRate
  * @param {number|null} unitWeightKg - Unit weight in kg
- * @param {number|null} cargoRateCnyPerKg - Cargo rate in CNY per kg
- * @param {number|null} cnyRubRate - CNY to RUB exchange rate
+ * @param {number|null} cargoRateUsdPerKg - Cargo rate in USD per kg
+ * @param {number|null} usdRubRate - USD to RUB exchange rate
  * @returns {number|null} - Cargo cost in RUB or null if inputs invalid
  */
-export function calculateCargoCostRub(unitWeightKg, cargoRateCnyPerKg, cnyRubRate) {
-  if (!isValidNonNegativeNumber(unitWeightKg) || 
-      !isValidNonNegativeNumber(cargoRateCnyPerKg) || 
-      !isValidPositiveNumber(cnyRubRate)) {
+export function calculateCargoCostRub(unitWeightKg, cargoRateUsdPerKg, usdRubRate) {
+  if (!isValidNonNegativeNumber(unitWeightKg) ||
+      !isValidNonNegativeNumber(cargoRateUsdPerKg) ||
+      !isValidPositiveNumber(usdRubRate)) {
     return null;
   }
-  
-  const result = unitWeightKg * cargoRateCnyPerKg * cnyRubRate;
+
+  const result = unitWeightKg * cargoRateUsdPerKg * usdRubRate;
   return Number.isFinite(result) ? result : null;
 }
 
@@ -235,13 +235,13 @@ export function calculateMarginRate(profitRub, retailPriceRub) {
  */
 export function calculateAll(input) {
   // Step 1: Calculate purchase in RUB
-  const purchaseRub = calculatePurchaseRub(input.unitPriceCny, input.cnyRubRate);
-  
-  // Step 2: Calculate cargo cost in RUB (using CNY rate)
+  const purchaseRub = calculatePurchaseRub(input.unitPriceUsd, input.usdRubRate);
+
+  // Step 2: Calculate cargo cost in RUB (using USD rate)
   const cargoCostRub = calculateCargoCostRub(
     input.unitWeightKg,
-    input.cargoRateCnyPerKg,
-    input.cnyRubRate
+    input.cargoRateUsdPerKg,
+    input.usdRubRate
   );
   
   // Step 3: Calculate insurance
@@ -287,9 +287,9 @@ export function calculateAll(input) {
  */
 export function getRequiredFields() {
   return [
-    'unitPriceCny',
-    'cnyRubRate',
-    'cargoRateCnyPerKg',
+    'unitPriceUsd',
+    'usdRubRate',
+    'cargoRateUsdPerKg',
     'unitWeightKg',
     'markupRate',
     'taxRate'
@@ -328,11 +328,11 @@ export function getFieldLabels() {
   return {
     productName: 'Название товара',
     sku: 'Артикул / SKU',
-    unitPriceCny: 'Цена за единицу (CNY)',
-    cnyRubRate: 'Курс CNY/RUB',
+    unitPriceUsd: 'Цена за единицу (USD)',
+    usdRubRate: 'Курс USD/RUB',
     chinaDeliveryRub: 'Доставка по Китаю (₽)',
     densityKgM3: 'Плотность (кг/м³)',
-    cargoRateCnyPerKg: 'Ставка карго (¥/кг)',
+    cargoRateUsdPerKg: 'Ставка карго (USD/кг)',
     unitWeightKg: 'Вес единицы (кг)',
     insuranceRate: 'Страховка (%)',
     reworkRub: 'Переработка / брак (₽)',

@@ -165,10 +165,10 @@
       group('TC-01: Spreadsheet baseline (Example A)');
       test('Example A calculations match expected values', () => {
         const input = {
-          unitPriceCny: 100,
-          cnyRubRate: 13.5,
+          unitPriceUsd: 15,
+          usdRubRate: 95,
           chinaDeliveryRub: 20,
-          cargoRateCnyPerKg: 27,  // ≈$2/kg at rate 13.5
+          cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 3.7,
           reworkRub: 50,
@@ -176,16 +176,16 @@
           markupRate: 1.0,  // 100% markup as decimal
           taxRate: 6
         };
-        
+
         const output = formulas.calculateAll(input);
-        
-        assertEqual(output.purchaseRub, 1350, 'Purchase in RUB');
-        assertEqual(output.cargoCostRub, 182.25, 'Cargo cost');  // 0.5 * 27 * 13.5
-        assertEqual(output.insuranceRub, 49.95, 'Insurance');
-        assertEqual(output.totalCostRub, 1682.20, 'Total cost');
-        assertEqual(output.retailPriceRub, 3364.40, 'Retail price');
-        assertEqual(output.taxRub, 201.86, 'Taxes');
-        assertEqual(output.profitRub, 1480.34, 'Profit');
+
+        assertEqual(output.purchaseRub, 1425, 'Purchase in RUB');
+        assertEqual(output.cargoCostRub, 95, 'Cargo cost');  // 0.5 * 2 * 95
+        assertEqual(output.insuranceRub, 52.73, 'Insurance');
+        assertEqual(output.totalCostRub, 1672.73, 'Total cost');
+        assertEqual(output.retailPriceRub, 3345.46, 'Retail price');
+        assertEqual(output.taxRub, 200.73, 'Taxes');
+        assertEqual(output.profitRub, 1472.00, 'Profit');
         assertEqual(output.marginRate, 0.44, 'Margin rate');
       });
       
@@ -217,10 +217,10 @@
       group('TC-04: Zero tax');
       test('Zero tax calculation', () => {
         const input = {
-          unitPriceCny: 100,
-          cnyRubRate: 13.5,
+          unitPriceUsd: 15,
+          usdRubRate: 95,
           chinaDeliveryRub: 20,
-          cargoRateCnyPerKg: 27,
+          cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 0,
           reworkRub: 50,
@@ -228,21 +228,21 @@
           markupRate: 1.0,  // 100% markup as decimal
           taxRate: 0
         };
-        
+
         const output = formulas.calculateAll(input);
-        
+
         assertEqual(output.taxRub, 0, 'Tax should be 0');
-        assertEqual(output.profitRub, 1682.20, 'Profit should include no tax deduction');  // 3364.40 - 1682.20
+        assertEqual(output.profitRub, 1620, 'Profit should include no tax deduction');  // 3240 - 1620
       });
       
       // TC-05: Zero markup
       group('TC-05: Zero markup');
       test('Zero markup calculation', () => {
         const input = {
-          unitPriceCny: 100,
-          cnyRubRate: 13.5,
+          unitPriceUsd: 15,
+          usdRubRate: 95,
           chinaDeliveryRub: 20,
-          cargoRateCnyPerKg: 27,
+          cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 0,
           reworkRub: 50,
@@ -283,10 +283,10 @@
       group('TC-08: Total sum integrity');
       test('All cost components included', () => {
         const input = {
-          unitPriceCny: 100,
-          cnyRubRate: 13.5,
+          unitPriceUsd: 15,
+          usdRubRate: 95,
           chinaDeliveryRub: 20,
-          cargoRateCnyPerKg: 27,
+          cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 3.7,
           reworkRub: 50,
@@ -304,11 +304,11 @@
       // TC-09: Negative input rejection
       group('TC-09: Negative input rejection');
       test('Negative price returns null', () => {
-        const purchase = formulas.calculatePurchaseRub(-100, 13.5);
+        const purchase = formulas.calculatePurchaseRub(-15, 95);
         assertNull(purchase, 'Negative price should return null');
       });
       test('Negative rate returns null', () => {
-        const purchase = formulas.calculatePurchaseRub(100, -13.5);
+        const purchase = formulas.calculatePurchaseRub(15, -95);
         assertNull(purchase, 'Negative rate should return null');
       });
       
@@ -316,10 +316,10 @@
       group('TC-10: Empty required field');
       test('Null inputs produce null outputs', () => {
         const input = {
-          unitPriceCny: null,
-          cnyRubRate: null,
+          unitPriceUsd: null,
+          usdRubRate: null,
           chinaDeliveryRub: null,
-          cargoRateCnyPerKg: null,
+          cargoRateUsdPerKg: null,
           unitWeightKg: null,
           insuranceRate: null,
           reworkRub: null,
@@ -351,15 +351,15 @@
       // Validation tests
       group('Validation: Field validation');
       test('Valid positive number passes', () => {
-        const result = validation.validateField('cnyRubRate', 13.5);
+        const result = validation.validateField('usdRubRate', 95);
         assertTrue(result.isValid, 'Valid rate should pass');
       });
       test('Negative exchange rate fails', () => {
-        const result = validation.validateField('cnyRubRate', -13.5);
+        const result = validation.validateField('usdRubRate', -95);
         assertFalse(result.isValid, 'Negative rate should fail');
       });
       test('Empty required field fails', () => {
-        const result = validation.validateField('unitPriceCny', null);
+        const result = validation.validateField('unitPriceUsd', null);
         assertFalse(result.isValid, 'Empty required field should fail');
       });
       
@@ -390,10 +390,10 @@
       group('Example B: Alternative scenario');
       test('Example B calculations match expected values', () => {
         const input = {
-          unitPriceCny: 75,
-          cnyRubRate: 14,
+          unitPriceUsd: 10,
+          usdRubRate: 98,
           chinaDeliveryRub: 30,
-          cargoRateCnyPerKg: 34,  // ≈$2.44/kg at rate 14
+          cargoRateUsdPerKg: 2.5,
           unitWeightKg: 0.8,
           insuranceRate: 3,
           reworkRub: 40,
@@ -401,16 +401,16 @@
           markupRate: 0.8,  // 80% markup as decimal
           taxRate: 6
         };
-        
+
         const output = formulas.calculateAll(input);
-        
-        assertEqual(output.purchaseRub, 1050, 'Purchase in RUB');
-        assertEqual(output.cargoCostRub, 380.80, 'Cargo cost');  // 0.8 * 34 * 14
-        assertEqual(output.insuranceRub, 31.50, 'Insurance');
-        assertEqual(output.totalCostRub, 1557.30, 'Total cost');
-        assertEqual(output.retailPriceRub, 2803.14, 'Retail price');
-        assertEqual(output.taxRub, 168.19, 'Taxes');
-        assertEqual(output.profitRub, 1077.65, 'Profit');
+
+        assertEqual(output.purchaseRub, 980, 'Purchase in RUB');
+        assertEqual(output.cargoCostRub, 196, 'Cargo cost');  // 0.8 * 2.5 * 98
+        assertEqual(output.insuranceRub, 29.40, 'Insurance');
+        assertEqual(output.totalCostRub, 1300.40, 'Total cost');
+        assertEqual(output.retailPriceRub, 2340.72, 'Retail price');
+        assertEqual(output.taxRub, 140.44, 'Taxes');
+        assertEqual(output.profitRub, 899.88, 'Profit');
         assertEqual(output.marginRate, 0.384, 'Margin rate');
       });
       

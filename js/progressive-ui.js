@@ -19,8 +19,8 @@ const LAST_USED_KEY = 'china_calc_last_used';
 
 // Step configuration
 const STEPS = {
-  1: { id: 'step-1', requiredFields: ['unitPriceCny', 'cnyRubRate'] },
-  2: { id: 'step-2', requiredFields: ['unitWeightKg', 'cargoRateCnyPerKg'] },
+  1: { id: 'step-1', requiredFields: ['unitPriceUsd', 'usdRubRate'] },
+  2: { id: 'step-2', requiredFields: ['unitWeightKg', 'cargoRateUsdPerKg'] },
   3: { id: 'step-3', requiredFields: [] },
   4: { id: 'step-4', requiredFields: [] }
 };
@@ -367,33 +367,33 @@ function setupLastUsedButtons() {
  */
 function setupInlinePreviews() {
   // Step 1 previews
-  const unitPriceInput = document.getElementById('unit-price-cny');
-  const cnyRateInput = document.getElementById('cny-rub-rate');
-  
+  const unitPriceInput = document.getElementById('unit-price-usd');
+  const usdRateInput = document.getElementById('usd-rub-rate');
+
   const updateStep1Preview = () => {
     const unitPrice = parseFloat(unitPriceInput?.value) || 0;
-    const cnyRate = parseFloat(cnyRateInput?.value) || 0;
-    
+    const usdRate = parseFloat(usdRateInput?.value) || 0;
+
     if (elements.previewUnitPrice) {
-      const purchaseRub = unitPrice * cnyRate;
-      elements.previewUnitPrice.querySelector('.preview-value').textContent = 
+      const purchaseRub = unitPrice * usdRate;
+      elements.previewUnitPrice.querySelector('.preview-value').textContent =
         purchaseRub > 0 ? formatRub(purchaseRub) : '—';
     }
-    
+
     // Enable/disable CTA
     if (elements.btnExpandStep2) {
-      const isValid = unitPrice > 0 && cnyRate > 0;
+      const isValid = unitPrice > 0 && usdRate > 0;
       elements.btnExpandStep2.disabled = !isValid;
-      
+
       if (isValid) {
         elements.btnExpandStep2.classList.add('pulse');
         setTimeout(() => elements.btnExpandStep2.classList.remove('pulse'), 1500);
       }
     }
   };
-  
+
   unitPriceInput?.addEventListener('input', updateStep1Preview);
-  cnyRateInput?.addEventListener('input', updateStep1Preview);
+  usdRateInput?.addEventListener('input', updateStep1Preview);
 }
 
 /**
@@ -451,22 +451,22 @@ function updateUI(state) {
  */
 function checkStepUnlockConditions(input, output) {
   // Step 2: Unlock if step 1 has valid inputs
-  const step1Valid = input.unitPriceCny > 0 && input.cnyRubRate > 0;
+  const step1Valid = input.unitPriceUsd > 0 && input.usdRubRate > 0;
   if (step1Valid && elements.stepPanels[2]?.classList.contains('locked')) {
     elements.stepPanels[2].classList.remove('locked');
     elements.stepPanels[2].classList.add('ready');
     elements.stepIndicators[1]?.classList.add('ready');
   }
-  
+
   // Step 3: Unlock if step 2 has valid inputs
-  const step2Valid = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
+  const step2Valid = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0;
   if (step2Valid && elements.stepPanels[3]?.classList.contains('locked')) {
     elements.stepPanels[3].classList.remove('locked');
     elements.stepPanels[3].classList.add('ready');
   }
-  
+
   // Step 4: Unlock when step 2 is complete (step 3 has no required fields)
-  const step2Complete = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0;
   if (step2Complete && elements.stepPanels[4]?.classList.contains('locked')) {
     elements.stepPanels[4].classList.remove('locked');
     elements.stepPanels[4].classList.add('ready');
@@ -478,10 +478,10 @@ function checkStepUnlockConditions(input, output) {
  */
 function getInputElementId(fieldId) {
   const mapping = {
-    unitPriceCny: 'unit-price-cny',
-    cnyRubRate: 'cny-rub-rate',
+    unitPriceUsd: 'unit-price-usd',
+    usdRubRate: 'usd-rub-rate',
     unitWeightKg: 'unit-weight',
-    cargoRateCnyPerKg: 'cargo-rate-cny',
+    cargoRateUsdPerKg: 'cargo-rate-usd',
     chinaDeliveryRub: 'china-delivery-rub',
     insuranceRate: 'insurance-rate',
     reworkRub: 'rework-rub',
@@ -522,7 +522,7 @@ function getLastUsed(fieldId) {
  * Load all last used values into inputs
  */
 export function loadLastUsedValues() {
-  const fields = ['unitPriceCny', 'cnyRubRate', 'cargoRateCnyPerKg', 
+  const fields = ['unitPriceUsd', 'usdRubRate', 'cargoRateUsdPerKg',
                   'chinaDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
   
   fields.forEach(fieldId => {

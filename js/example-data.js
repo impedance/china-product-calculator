@@ -10,11 +10,11 @@
 export const EXAMPLE_A = {
   productName: 'Product A',
   sku: 'SKU-001',
-  unitPriceCny: 100,
-  cnyRubRate: 13.5,
+  unitPriceUsd: 15,
+  usdRubRate: 95,
   chinaDeliveryRub: 20,
   densityKgM3: 250,
-  cargoRateCnyPerKg: 27,  // ≈$2/кг при курсе 13.5
+  cargoRateUsdPerKg: 2,
   unitWeightKg: 0.5,
   insuranceRate: 3.7,
   reworkRub: 50,
@@ -28,13 +28,13 @@ export const EXAMPLE_A = {
  * Used for testing and verification
  */
 export const EXAMPLE_A_EXPECTED = {
-  purchaseRub: 1350,
-  cargoCostRub: 182.25,  // 0.5 * 27 * 13.5
-  insuranceRub: 49.95,
-  totalCostRub: 1682.20,  // 1350 + 20 + 182.25 + 49.95 + 50 + 30
-  retailPriceRub: 3364.40, // 1682.20 * 2
-  taxRub: 201.86,         // 3364.40 * 0.06
-  profitRub: 1480.34,     // 3364.40 - 1682.20 - 201.86
+  purchaseRub: 1425,
+  cargoCostRub: 95,  // 0.5 * 2 * 95
+  insuranceRub: 52.73,
+  totalCostRub: 1672.73,  // 1425 + 20 + 95 + 52.73 + 50 + 30
+  retailPriceRub: 3345.46, // 1672.73 * 2
+  taxRub: 200.73,         // 3345.46 * 0.06
+  profitRub: 1472.00,     // 3345.46 - 1672.73 - 200.73
   marginRate: 0.44        // 44.0%
 };
 
@@ -45,11 +45,11 @@ export const EXAMPLE_A_EXPECTED = {
 export const EXAMPLE_B = {
   productName: 'Product B',
   sku: 'SKU-002',
-  unitPriceCny: 75,
-  cnyRubRate: 14,
+  unitPriceUsd: 10,
+  usdRubRate: 98,
   chinaDeliveryRub: 30,
   densityKgM3: 180,
-  cargoRateCnyPerKg: 34,  // ≈$2.44/кг при курсе 14
+  cargoRateUsdPerKg: 2.5,
   unitWeightKg: 0.8,
   insuranceRate: 3,
   reworkRub: 40,
@@ -63,13 +63,13 @@ export const EXAMPLE_B = {
  * Used for testing and verification
  */
 export const EXAMPLE_B_EXPECTED = {
-  purchaseRub: 1050,
-  cargoCostRub: 380.80,   // 0.8 * 34 * 14
-  insuranceRub: 31.50,
-  totalCostRub: 1557.30,  // 1050 + 30 + 380.80 + 31.50 + 40 + 25
-  retailPriceRub: 2803.14, // 1557.30 * 1.8
-  taxRub: 168.19,         // 2803.14 * 0.06
-  profitRub: 1077.65,     // 2803.14 - 1557.30 - 168.19
+  purchaseRub: 980,
+  cargoCostRub: 196,   // 0.8 * 2.5 * 98
+  insuranceRub: 29.40,
+  totalCostRub: 1300.40,  // 980 + 30 + 196 + 29.40 + 40 + 25
+  retailPriceRub: 2340.72, // 1300.40 * 1.8
+  taxRub: 140.44,         // 2340.72 * 0.06
+  profitRub: 899.88,     // 2340.72 - 1300.40 - 140.44
   marginRate: 0.384       // 38.4%
 };
 
@@ -129,9 +129,9 @@ export function getAllPresets() {
  */
 export function getPresetDescription(presetId) {
   const descriptions = {
-    'example-a': 'Базовый сценарий: наушники, цена 100¥, вес 0.5кг, карго 27¥/кг, наценка 100%',
-    'example-b': 'Альтернативный сценарий: аксессуары, цена 75¥, вес 0.8кг, карго 34¥/кг, наценка 80%'
+    'example-a': 'Базовый сценарий: наушники, цена $15, вес 0.5кг, карго $2/кг, наценка 100%',
+    'example-b': 'Альтернативный сценарий: аксессуары, цена $10, вес 0.8кг, карго $2.5/кг, наценка 80%'
   };
-  
+
   return descriptions[presetId] || 'Неизвестный пресет';
 }

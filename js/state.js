@@ -21,11 +21,11 @@ import { validateAllFields, isScenarioValid } from './validation.js';
 const initialInputState = {
   productName: '',
   sku: '',
-  unitPriceCny: null,
-  cnyRubRate: null,
+  unitPriceUsd: null,
+  usdRubRate: null,
   chinaDeliveryRub: null,
   densityKgM3: null,
-  cargoRateCnyPerKg: null,
+  cargoRateUsdPerKg: null,
   unitWeightKg: null,
   insuranceRate: 0,
   reworkRub: null,
@@ -163,8 +163,8 @@ export function setInputField(fieldId, value) {
 export function recalculate() {
   const { input } = currentState;
 
-  const purchaseRub = calculatePurchaseRub(input.unitPriceCny, input.cnyRubRate);
-  const cargoCostRub = calculateCargoCostRub(input.unitWeightKg, input.cargoRateCnyPerKg, input.cnyRubRate);
+  const purchaseRub = calculatePurchaseRub(input.unitPriceUsd, input.usdRubRate);
+  const cargoCostRub = calculateCargoCostRub(input.unitWeightKg, input.cargoRateUsdPerKg, input.usdRubRate);
   const insuranceRub = calculateInsuranceRub(purchaseRub, input.insuranceRate || 0);
   const totalCostRub = calculateTotalCostRub({
     purchaseRub,
@@ -206,8 +206,8 @@ export function recalculate() {
 function updateStepProgression() {
   const { input } = currentState;
   
-  // Step 1: Complete if unit price and CNY rate are filled
-  const step1Complete = input.unitPriceCny > 0 && input.cnyRubRate > 0;
+  // Step 1: Complete if unit price and USD rate are filled
+  const step1Complete = input.unitPriceUsd > 0 && input.usdRubRate > 0;
   currentState.ui.steps[1].completed = step1Complete;
   
   // Unlock step 2 if step 1 is complete
@@ -215,8 +215,8 @@ function updateStepProgression() {
     currentState.ui.steps[2].unlocked = true;
   }
   
-  // Step 2: Complete if weight and cargo rate are filled (CNY rate already validated in step 1)
-  const step2Complete = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
+  // Step 2: Complete if weight and cargo rate are filled (USD rate already validated in step 1)
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0;
   currentState.ui.steps[2].completed = step2Complete;
   
   // Unlock step 3 if step 2 is complete
@@ -379,8 +379,8 @@ export function isStepComplete(stepNum) {
   const { input } = currentState;
   
   const requiredFields = {
-    1: ['unitPriceCny', 'cnyRubRate'],
-    2: ['unitWeightKg', 'cargoRateCnyPerKg'],
+    1: ['unitPriceUsd', 'usdRubRate'],
+    2: ['unitWeightKg', 'cargoRateUsdPerKg'],
     3: [],
     4: []
   };

@@ -52,7 +52,7 @@ import {
 } from './progressive-ui.js';
 
 import {
-  fetchCnyRate
+  fetchUsdRate
 } from './exchange-rate.js';
 
 import {
@@ -89,11 +89,11 @@ function cacheElements() {
   elements.inputs = {
     productName: document.getElementById('product-name'),
     sku: document.getElementById('sku'),
-    unitPriceCny: document.getElementById('unit-price-cny'),
-    cnyRubRate: document.getElementById('cny-rub-rate'),
+    unitPriceUsd: document.getElementById('unit-price-usd'),
+    usdRubRate: document.getElementById('usd-rub-rate'),
     chinaDeliveryRub: document.getElementById('china-delivery-rub'),
     densityKgM3: document.getElementById('density'),
-    cargoRateCnyPerKg: document.getElementById('cargo-rate-cny'),
+    cargoRateUsdPerKg: document.getElementById('cargo-rate-usd'),
     unitWeightKg: document.getElementById('unit-weight'),
     insuranceRate: document.getElementById('insurance-rate'),
     reworkRub: document.getElementById('rework-rub'),
@@ -105,10 +105,10 @@ function cacheElements() {
   
   // Error messages
   elements.errors = {
-    unitPriceCny: document.getElementById('error-unit-price-cny'),
-    cnyRubRate: document.getElementById('error-cny-rub-rate'),
+    unitPriceUsd: document.getElementById('error-unit-price-usd'),
+    usdRubRate: document.getElementById('error-usd-rub-rate'),
     chinaDeliveryRub: document.getElementById('error-china-delivery-rub'),
-    cargoRateCnyPerKg: document.getElementById('error-cargo-rate-cny'),
+    cargoRateUsdPerKg: document.getElementById('error-cargo-rate-usd'),
     unitWeightKg: document.getElementById('error-unit-weight'),
     insuranceRate: document.getElementById('error-insurance-rate'),
     reworkRub: document.getElementById('error-rework-rub'),
@@ -434,27 +434,27 @@ function showHelpSheet() {
           <span class="instruction-step-title">Курс валют</span>
         </div>
         <div class="instruction-step-desc">
-          Автоматически подгружается курс ЦБ РФ. Можно ввести свой курс CNY/RUB.
+          Автоматически подгружается курс ЦБ РФ. Можно ввести свой курс USD/RUB.
         </div>
       </div>
-      
+
       <div class="instruction-step">
         <div class="instruction-step-header">
           <span class="instruction-step-icon">💰</span>
           <span class="instruction-step-title">Шаг 1: Закупка</span>
         </div>
         <div class="instruction-step-desc">
-          Введите цену товара в юанях (¥). Поле обязательное — без него не рассчитается закупочная стоимость.
+          Введите цену товара в долларах ($). Поле обязательное — без него не рассчитается закупочная стоимость.
         </div>
       </div>
-      
+
       <div class="instruction-step">
         <div class="instruction-step-header">
           <span class="instruction-step-icon">🚚</span>
           <span class="instruction-step-title">Шаг 2: Логистика</span>
         </div>
         <div class="instruction-step-desc">
-          Укажите вес единицы (кг) и ставку карго (¥/кг). Доставка по Китаю — опционально.
+          Укажите вес единицы (кг) и ставку карго ($/кг). Доставка по Китаю — опционально.
         </div>
       </div>
       
@@ -687,8 +687,8 @@ function render(state) {
  */
 function updateStepPanelStates(input, output, ui) {
   // Check step completion
-  const step1Complete = input.unitPriceCny > 0 && input.cnyRubRate > 0;
-  const step2Complete = input.unitWeightKg > 0 && input.cargoRateCnyPerKg > 0;
+  const step1Complete = input.unitPriceUsd > 0 && input.usdRubRate > 0;
+  const step2Complete = input.unitWeightKg > 0 && input.cargoRateUsdPerKg > 0;
   const step3Complete = output.totalCostRub !== null;
   const step4Complete = output.retailPriceRub !== null;
   
@@ -758,7 +758,7 @@ function updateStepPanelStates(input, output, ui) {
   // Update inline previews
   const previewUnitPrice = document.getElementById('preview-unit-price');
   if (previewUnitPrice) {
-    const purchaseRub = (input.unitPriceCny || 0) * (input.cnyRubRate || 0);
+    const purchaseRub = (input.unitPriceUsd || 0) * (input.usdRubRate || 0);
     previewUnitPrice.querySelector('.preview-value').textContent = purchaseRub > 0 ? formatRub(purchaseRub) : '—';
   }
 }
@@ -962,7 +962,7 @@ async function init() {
     addRow({ productName: 'Новый товар', quantity: 0, unitCost: 0, retailPrice: 0, profitPerUnit: 0 });
   });
     
-  // Fetch CNY exchange rate from CBR API
+  // Fetch USD exchange rate from CBR API
   // This will always update the rate (overriding any saved value)
   await loadExchangeRate();
   
@@ -981,33 +981,33 @@ async function init() {
 }
 
 /**
- * Fetch and apply CNY exchange rate
+ * Fetch and apply USD exchange rate
  */
 async function loadExchangeRate() {
   try {
-    const result = await fetchCnyRate();
-    
+    const result = await fetchUsdRate();
+
     if (result !== null) {
       // Apply the fetched rate to state
-      updateInput({ cnyRubRate: result.rate });
-      
+      updateInput({ usdRubRate: result.rate });
+
       // Update UI indicator
       updateRateSourceIndicator(result);
-      
+
       console.log(`[App] Exchange rate updated: ${result.rate} (${result.source})`);
     } else {
       // Use default rate if fetch failed and no cache available
-      updateInput({ cnyRubRate: 13.5 });
-      updateRateSourceIndicator({ rate: 13.5, source: 'default', effectiveDate: null });
-      
-      console.log('[App] Using default exchange rate: 13.5');
+      updateInput({ usdRubRate: 95 });
+      updateRateSourceIndicator({ rate: 95, source: 'default', effectiveDate: null });
+
+      console.log('[App] Using default exchange rate: 95');
     }
   } catch (error) {
     console.error('[App] Failed to load exchange rate:', error);
-    
+
     // Fallback to default
-    updateInput({ cnyRubRate: 13.5 });
-    updateRateSourceIndicator({ rate: 13.5, source: 'default', effectiveDate: null });
+    updateInput({ usdRubRate: 95 });
+    updateRateSourceIndicator({ rate: 95, source: 'default', effectiveDate: null });
   }
 }
 

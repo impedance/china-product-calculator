@@ -32,28 +32,28 @@ export function formatRub(value, showZero = false) {
 }
 
 /**
- * Formats a number as Chinese Yuan
- * Format: "100 ¥"
+ * Formats a number as US Dollar
+ * Format: "100 $"
  * @param {number|null|undefined} value - Value to format
  * @param {boolean} showZero - Whether to show 0 instead of placeholder
  * @returns {string} - Formatted string or placeholder
  */
-export function formatCny(value, showZero = false) {
+export function formatUsd(value, showZero = false) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return '—';
   }
-  
+
   if (value === 0 && !showZero) {
     return '—';
   }
-  
+
   const rounded = Math.round(value * 100) / 100;
-  
+
   return new Intl.NumberFormat('ru-RU', {
     style: 'decimal',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(rounded) + ' ¥';
+  }).format(rounded) + ' $';
 }
 
 /**

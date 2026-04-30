@@ -96,14 +96,14 @@
     <div class="exchange-rate-block expanded" id="exchange-rate-block">
       <div class="block-body">
         <div class="form-group">
-          <label class="form-label form-label-required" for="cny-rub-rate">Курс CNY/RUB</label>
+          <label class="form-label form-label-required" for="usd-rub-rate">Курс USD/RUB</label>
           <div class="input-wrapper with-preview">
-            <input type="number" class="form-input" id="cny-rub-rate" placeholder="13.5" step="0.01" min="0.01">
-            <span class="input-unit">₽/¥</span>
-            <button class="btn-last-used" data-field="cnyRubRate" title="Последний курс">↻</button>
+            <input type="number" class="form-input" id="usd-rub-rate" placeholder="95" step="0.01" min="0.01">
+            <span class="input-unit">₽/$</span>
+            <button class="btn-last-used" data-field="usdRubRate" title="Последний курс">↻</button>
           </div>
           <div class="rate-source" id="rate-source"></div>
-          <div class="form-error" id="error-cny-rub-rate" style="display: none;">
+          <div class="form-error" id="error-usd-rub-rate" style="display: none;">
             <span>⚠</span> Курс должен быть больше 0
           </div>
         </div>
@@ -121,17 +121,17 @@
       </div>
       <div class="step-panel-body">
         <div class="form-group">
-          <label class="form-label form-label-required" for="unit-price-cny">Цена за единицу</label>
+          <label class="form-label form-label-required" for="unit-price-usd">Цена за единицу</label>
           <div class="input-wrapper with-preview">
-            <input type="number" class="form-input" id="unit-price-cny" placeholder="100" step="0.01" min="0">
-            <span class="input-unit">¥</span>
-            <button class="btn-last-used" data-field="unitPriceCny" title="Последнее значение">↻</button>
+            <input type="number" class="form-input" id="unit-price-usd" placeholder="15" step="0.01" min="0">
+            <span class="input-unit">$</span>
+            <button class="btn-last-used" data-field="unitPriceUsd" title="Последнее значение">↻</button>
           </div>
           <div class="inline-preview" id="preview-unit-price">
             <span class="preview-label">Закупка:</span>
             <span class="preview-value">—</span>
           </div>
-          <div class="form-error" id="error-unit-price-cny" style="display: none;">
+          <div class="form-error" id="error-unit-price-usd" style="display: none;">
             <span>⚠</span> Обязательное поле
           </div>
         </div>
@@ -171,14 +171,14 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label form-label-required" for="cargo-rate-cny">Ставка карго</label>
+          <label class="form-label form-label-required" for="cargo-rate-usd">Ставка карго</label>
           <div class="input-wrapper">
-            <input type="number" class="form-input" id="cargo-rate-cny" placeholder="18" step="0.01" min="0">
-            <span class="input-unit">¥/кг</span>
-            <button class="btn-last-used" data-field="cargoRateCnyPerKg" title="Последняя ставка">↻</button>
+            <input type="number" class="form-input" id="cargo-rate-usd" placeholder="2" step="0.01" min="0">
+            <span class="input-unit">$/кг</span>
+            <button class="btn-last-used" data-field="cargoRateUsdPerKg" title="Последняя ставка">↻</button>
           </div>
-          <div class="form-hint">Типично ¥13-27/кг (≈$2-4)</div>
-          <div class="form-error" id="error-cargo-rate-cny" style="display: none;"></div>
+          <div class="form-hint">Типично $2-5/кг</div>
+          <div class="form-error" id="error-cargo-rate-usd" style="display: none;"></div>
         </div>
 
         <div class="form-group">

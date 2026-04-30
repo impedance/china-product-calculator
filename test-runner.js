@@ -49,15 +49,15 @@ function normalizePercent(value) {
   return value > 1 ? value / 100 : value;
 }
 
-function calculatePurchaseRub(unitPriceCny, cnyRubRate) {
-  if (unitPriceCny === null || cnyRubRate === null || unitPriceCny < 0 || cnyRubRate <= 0) return null;
-  return unitPriceCny * cnyRubRate;
+function calculatePurchaseRub(unitPriceUsd, usdRubRate) {
+  if (unitPriceUsd === null || usdRubRate === null || unitPriceUsd < 0 || usdRubRate <= 0) return null;
+  return unitPriceUsd * usdRubRate;
 }
 
-function calculateCargoCostRub(unitWeightKg, cargoRateCnyPerKg, cnyRubRate) {
-  if (unitWeightKg === null || cargoRateCnyPerKg === null || cnyRubRate === null) return null;
-  if (unitWeightKg < 0 || cargoRateCnyPerKg < 0 || cnyRubRate <= 0) return null;
-  return unitWeightKg * cargoRateCnyPerKg * cnyRubRate;
+function calculateCargoCostRub(unitWeightKg, cargoRateUsdPerKg, usdRubRate) {
+  if (unitWeightKg === null || cargoRateUsdPerKg === null || usdRubRate === null) return null;
+  if (unitWeightKg < 0 || cargoRateUsdPerKg < 0 || usdRubRate <= 0) return null;
+  return unitWeightKg * cargoRateUsdPerKg * usdRubRate;
 }
 
 function calculateInsuranceRub(purchaseRub, insuranceRate) {
@@ -131,24 +131,24 @@ function calculateBatchProfit(quantity, profitPerUnit) {
 // TC-01: Example A
 console.log('--- TC-01: Spreadsheet baseline (Example A) ---');
 test('Purchase calculation', () => {
-  const result = calculatePurchaseRub(100, 13.5);
-  assertEqual(result, 1350, 'Purchase should be 1350');
+  const result = calculatePurchaseRub(15, 95);
+  assertEqual(result, 1425, 'Purchase should be 1425');
 });
 
 test('Cargo cost calculation', () => {
-  const result = calculateCargoCostRub(0.5, 27, 13.5);  // 0.5 * 27 * 13.5 = 182.25
-  assertEqual(result, 182.25, 'Cargo should be 182.25');
+  const result = calculateCargoCostRub(0.5, 2, 95);  // 0.5 * 2 * 95 = 95
+  assertEqual(result, 95, 'Cargo should be 95');
 });
 
 test('Insurance calculation', () => {
-  const purchase = calculatePurchaseRub(100, 13.5);
+  const purchase = calculatePurchaseRub(15, 95);
   const result = calculateInsuranceRub(purchase, 3.7);
-  assertEqual(result, 49.95, 'Insurance should be 49.95');
+  assertEqual(result, 52.73, 'Insurance should be 52.73');
 });
 
 test('Total cost calculation', () => {
-  const purchase = calculatePurchaseRub(100, 13.5);
-  const cargo = calculateCargoCostRub(0.5, 27, 13.5);  // 182.25
+  const purchase = calculatePurchaseRub(15, 95);
+  const cargo = calculateCargoCostRub(0.5, 2, 95);  // 95
   const insurance = calculateInsuranceRub(purchase, 3.7);
   const result = calculateTotalCostRub({
     purchaseRub: purchase,
@@ -158,26 +158,26 @@ test('Total cost calculation', () => {
     reworkRub: 50,
     packagingRub: 30
   });
-  assertEqual(result, 1682.20, 'Total cost should be 1682.20');
+  assertEqual(result, 1672.73, 'Total cost should be 1672.73');
 });
 
 test('Retail price calculation', () => {
-  const result = calculateRetailPriceRub(1682.20, 1.0);  // 100% markup as decimal
-  assertEqual(result, 3364.40, 'Retail should be 3364.40');
+  const result = calculateRetailPriceRub(1672.73, 1.0);  // 100% markup as decimal
+  assertEqual(result, 3345.46, 'Retail should be 3345.46');
 });
 
 test('Tax calculation', () => {
-  const result = calculateTaxRub(3364.40, 6);
-  assertEqual(result, 201.86, 'Tax should be 201.86');
+  const result = calculateTaxRub(3345.46, 6);
+  assertEqual(result, 200.73, 'Tax should be 200.73');
 });
 
 test('Profit calculation', () => {
-  const result = calculateProfitRub(3364.40, 1682.20, 201.86);
-  assertEqual(result, 1480.34, 'Profit should be 1480.34');
+  const result = calculateProfitRub(3345.46, 1672.73, 200.73);
+  assertEqual(result, 1472.00, 'Profit should be 1472.00');
 });
 
 test('Margin calculation', () => {
-  const result = calculateMarginRate(1480.34, 3364.40);
+  const result = calculateMarginRate(1472.00, 3345.46);
   assertEqual(result, 0.44, 'Margin should be 44%');
 });
 
@@ -240,20 +240,20 @@ test('Safe division - zero retail', () => {
 });
 
 test('Negative input rejected', () => {
-  const result = calculatePurchaseRub(-100, 13.5);
+  const result = calculatePurchaseRub(-15, 95);
   assertNull(result);
 });
 
 test('Null input returns null', () => {
-  const result = calculatePurchaseRub(null, 13.5);
+  const result = calculatePurchaseRub(null, 95);
   assertNull(result);
 });
 
 // TC-04: Example B
 console.log('\n--- TC-04: Example B ---');
 test('Example B full calculation', () => {
-  const purchase = calculatePurchaseRub(75, 14);
-  const cargo = calculateCargoCostRub(0.8, 34, 14);  // 0.8 * 34 * 14 = 380.8
+  const purchase = calculatePurchaseRub(10, 98);
+  const cargo = calculateCargoCostRub(0.8, 2.5, 98);  // 0.8 * 2.5 * 98 = 196
   const insurance = calculateInsuranceRub(purchase, 3);
   const total = calculateTotalCostRub({
     purchaseRub: purchase,
@@ -267,14 +267,14 @@ test('Example B full calculation', () => {
   const tax = calculateTaxRub(retail, 6);
   const profit = calculateProfitRub(retail, total, tax);
   const margin = calculateMarginRate(profit, retail);
-  
-  assertEqual(purchase, 1050, 'Purchase');
-  assertEqual(cargo, 380.80, 'Cargo');
-  assertEqual(insurance, 31.50, 'Insurance');
-  assertEqual(total, 1557.30, 'Total cost');
-  assertEqual(retail, 2803.14, 'Retail');
-  assertEqual(tax, 168.19, 'Tax');
-  assertEqual(profit, 1077.65, 'Profit');
+
+  assertEqual(purchase, 980, 'Purchase');
+  assertEqual(cargo, 196, 'Cargo');
+  assertEqual(insurance, 29.40, 'Insurance');
+  assertEqual(total, 1300.40, 'Total cost');
+  assertEqual(retail, 2340.72, 'Retail');
+  assertEqual(tax, 140.44, 'Tax');
+  assertEqual(profit, 899.88, 'Profit');
   assertEqual(margin, 0.384, 'Margin');
 });
 
@@ -282,14 +282,14 @@ test('Example B full calculation', () => {
 console.log('\n--- TC-05: Exchange Rate calculations ---');
 
 // Simulate exchange rate calculation from CBR response
-function calculateCnyRate(cnyData) {
-  if (!cnyData || typeof cnyData.Value !== 'number' || typeof cnyData.Nominal !== 'number') {
+function calculateUsdRate(usdData) {
+  if (!usdData || typeof usdData.Value !== 'number' || typeof usdData.Nominal !== 'number') {
     return null;
   }
-  if (cnyData.Nominal <= 0) {
+  if (usdData.Nominal <= 0) {
     return null;
   }
-  const rate = cnyData.Value / cnyData.Nominal;
+  const rate = usdData.Value / usdData.Nominal;
   return Math.round(rate * 1000000) / 1000000;
 }
 
@@ -306,38 +306,38 @@ function formatEffectiveDate(isoDate) {
   }
 }
 
-test('CNY rate calculation: Value / Nominal', () => {
-  const cnyData = { Value: 11.42, Nominal: 1 };
-  const result = calculateCnyRate(cnyData);
-  assertEqual(result, 11.42);
+test('USD rate calculation: Value / Nominal', () => {
+  const usdData = { Value: 95.50, Nominal: 1 };
+  const result = calculateUsdRate(usdData);
+  assertEqual(result, 95.50);
 });
 
-test('CNY rate with Nominal > 1', () => {
-  const cnyData = { Value: 114.2, Nominal: 10 };
-  const result = calculateCnyRate(cnyData);
-  assertEqual(result, 11.42);
+test('USD rate with Nominal > 1', () => {
+  const usdData = { Value: 955, Nominal: 10 };
+  const result = calculateUsdRate(usdData);
+  assertEqual(result, 95.5);
 });
 
-test('CNY rate rounding to 6 decimals', () => {
-  const cnyData = { Value: 11.42456789, Nominal: 1 };
-  const result = calculateCnyRate(cnyData);
-  assertEqual(result, 11.424568);
+test('USD rate rounding to 6 decimals', () => {
+  const usdData = { Value: 95.50456789, Nominal: 1 };
+  const result = calculateUsdRate(usdData);
+  assertEqual(result, 95.504568);
 });
 
-test('Invalid CNY data returns null', () => {
-  const result = calculateCnyRate(null);
+test('Invalid USD data returns null', () => {
+  const result = calculateUsdRate(null);
   assertNull(result);
 });
 
 test('Missing Value returns null', () => {
-  const cnyData = { Nominal: 1 };
-  const result = calculateCnyRate(cnyData);
+  const usdData = { Nominal: 1 };
+  const result = calculateUsdRate(usdData);
   assertNull(result);
 });
 
 test('Zero Nominal returns null', () => {
-  const cnyData = { Value: 11.42, Nominal: 0 };
-  const result = calculateCnyRate(cnyData);
+  const usdData = { Value: 95.50, Nominal: 0 };
+  const result = calculateUsdRate(usdData);
   assertNull(result);
 });
 
@@ -358,8 +358,8 @@ test('Empty date returns empty string', () => {
 // TC-11: calculateTotalRevenue
 console.log('\n--- TC-11: calculateTotalRevenue ---');
 test('calculateTotalRevenue: quantity × retail price', () => {
-  const result = calculateTotalRevenue(500, 3364.40);
-  assertEqual(result, 1682200, 1);
+  const result = calculateTotalRevenue(500, 3345.46);
+  assertEqual(result, 1672730, 1);
 });
 
 test('calculateTotalRevenue: null for invalid quantity', () => {
@@ -387,8 +387,8 @@ test('calculateBatchProfit: returns null when quantity is 0 or null', () => {
 });
 
 test('calculateBatchProfit: correct calculation', () => {
-  const result = calculateBatchProfit(500, 1480);
-  assertEqual(result, 740000, 1);
+  const result = calculateBatchProfit(500, 1472);
+  assertEqual(result, 736000, 1);
 });
 
 // Summary

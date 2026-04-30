@@ -1,18 +1,18 @@
 /**
  * Exchange Rate Service
- * Fetches CNY/RUB rate from MOEX ISS API (primary) with CBR fallback
+ * Fetches USD/RUB rate from MOEX ISS API (primary) with CBR fallback
  * Implements simple in-memory caching with different TTL for each source
  */
 
 // MOEX configuration - shorter TTL for intraday data
 const MOEX_CACHE_TTL_MS = 60 * 1000; // 1 minute (MOEX intraday changes frequently)
-const MOEX_API_URL = 'https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities/CNYRUB_TOM.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE,LCURRENTPRICE,UPDATETIME,SYSTIME';
+const MOEX_API_URL = 'https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities/USDRUB_TOM.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE,LCURRENTPRICE,UPDATETIME,SYSTIME';
 
 // CBR configuration - longer TTL for daily data
 const CBR_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const CBR_API_URL = 'https://www.cbr-xml-daily.ru/daily_json.js';
 
-const DEFAULT_RATE = 13.5;
+const DEFAULT_RATE = 95;
 
 // In-memory caches
 let moexCache = {
@@ -28,7 +28,7 @@ let cbrCache = {
 };
 
 /**
- * Fetches CNY exchange rate from MOEX ISS API
+ * Fetches USD exchange rate from MOEX ISS API
  * @returns {Promise<{rate: number, source: string, isToday: boolean}|null>}
  */
 async function fetchMoexRate() {
@@ -116,7 +116,7 @@ async function fetchMoexRate() {
       updatedAt: updatedAt
     };
 
-    console.log(`[ExchangeRate] Fetched MOEX rate: ${roundedRate} RUB/CNY`);
+    console.log(`[ExchangeRate] Fetched MOEX rate: ${roundedRate} RUB/USD`);
 
     return {
       rate: roundedRate,
@@ -131,7 +131,7 @@ async function fetchMoexRate() {
 }
 
 /**
- * Fetches CNY exchange rate from CBR API
+ * Fetches USD exchange rate from CBR API
  * @returns {Promise<{rate: number, source: string, effectiveDate: string, isToday: boolean}|null>}
  */
 async function fetchCbrRate() {
@@ -167,22 +167,22 @@ async function fetchCbrRate() {
       throw new Error('Invalid response: Valute missing');
     }
 
-    const cny = data.Valute.CNY;
+    const usd = data.Valute.USD;
 
-    if (!cny || typeof cny !== 'object') {
-      throw new Error('Invalid response: CNY data missing');
+    if (!usd || typeof usd !== 'object') {
+      throw new Error('Invalid response: USD data missing');
     }
 
-    if (typeof cny.Value !== 'number' || typeof cny.Nominal !== 'number') {
-      throw new Error('Invalid response: CNY Value or Nominal missing or not numeric');
+    if (typeof usd.Value !== 'number' || typeof usd.Nominal !== 'number') {
+      throw new Error('Invalid response: USD Value or Nominal missing or not numeric');
     }
 
-    if (cny.Nominal <= 0) {
-      throw new Error('Invalid response: CNY Nominal must be > 0');
+    if (usd.Nominal <= 0) {
+      throw new Error('Invalid response: USD Nominal must be > 0');
     }
 
     // Calculate rate: Value / Nominal
-    const rate = cny.Value / cny.Nominal;
+    const rate = usd.Value / usd.Nominal;
 
     // Round to 6 decimal places
     const roundedRate = Math.round(rate * 1000000) / 1000000;
@@ -196,7 +196,7 @@ async function fetchCbrRate() {
 
     const isToday = isDateToday(data.Date);
 
-    console.log(`[ExchangeRate] Fetched CBR rate: ${roundedRate} RUB/CNY, date: ${data.Date}`);
+    console.log(`[ExchangeRate] Fetched CBR rate: ${roundedRate} RUB/USD, date: ${data.Date}`);
 
     return {
       rate: roundedRate,
@@ -226,10 +226,10 @@ async function fetchCbrRate() {
 }
 
 /**
- * Fetches CNY exchange rate with fallback chain: MOEX -> CBR -> default
+ * Fetches USD exchange rate with fallback chain: MOEX -> CBR -> default
  * @returns {Promise<{rate: number, source: string, effectiveDate: string|null, isToday: boolean, stale?: boolean}|null>}
  */
-export async function fetchCnyRate() {
+export async function fetchUsdRate() {
   // Try MOEX first (intraday, more current)
   const moexResult = await fetchMoexRate();
   if (moexResult !== null) {
@@ -255,8 +255,8 @@ export async function fetchCnyRate() {
  * Gets exchange rate with fallback to default
  * @returns {Promise<{rate: number, source: string, effectiveDate: string|null, isToday: boolean, stale?: boolean}>}
  */
-export async function getCnyRateWithFallback() {
-  const result = await fetchCnyRate();
+export async function getUsdRateWithFallback() {
+  const result = await fetchUsdRate();
 
   if (result !== null) {
     return {
