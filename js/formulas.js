@@ -10,21 +10,19 @@
  * @returns {number|null} - Normalized value (0-1 range) or null if invalid
  */
 export function normalizePercent(value) {
-  if (value === null || value === undefined || Number.isNaN(value)) {
+  if (value === null || value === undefined || Number.isNaN(value) || value === '') {
     return null;
   }
   
-  if (typeof value !== 'number') {
-    return null;
-  }
-  
-  if (value < 0) {
+  const num = typeof value === 'number' ? value : parseFloat(value);
+  if (isNaN(num) || num < 0) {
     return null;
   }
   
   // If value > 1, assume it's a whole number percentage (e.g., 6 means 6%)
   // If value <= 1, assume it's already in decimal form (e.g., 0.06 means 6%)
-  return value > 1 ? value / 100 : value;
+  // Special case: 1 is treated as 100% markup/tax/insurance
+  return num > 1 ? num / 100 : num;
 }
 
 /**
@@ -158,12 +156,13 @@ export function calculateRetailPriceRub(totalCostRub, markupRate) {
   }
   
   // markupRate should already be in decimal form (UI converts percent to decimal)
-  // Validate it's a non-negative number
-  if (!isValidNonNegativeNumber(markupRate)) {
+  // but we normalize it here just in case (e.g. from presets)
+  const normalizedMarkup = normalizePercent(markupRate);
+  if (normalizedMarkup === null) {
     return null;
   }
   
-  const result = totalCostRub * (1 + markupRate);
+  const result = totalCostRub * (1 + normalizedMarkup);
   return Number.isFinite(result) ? result : null;
 }
 

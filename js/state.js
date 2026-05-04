@@ -13,7 +13,8 @@ import {
   calculateProfitRub,
   calculateMarginRate,
   calculateTotalRevenue,
-  calculateBatchProfit
+  calculateBatchProfit,
+  normalizePercent
 } from './formulas.js';
 import { validateAllFields, isScenarioValid } from './validation.js';
 
@@ -116,6 +117,11 @@ export function getUiState() {
  * @returns {Object} - New state
  */
 export function updateInput(updates) {
+  // Normalize markupRate if present
+  if (updates.markupRate !== undefined) {
+    updates.markupRate = normalizePercent(updates.markupRate);
+  }
+
   // Update input state
   currentState.input = {
     ...currentState.input,

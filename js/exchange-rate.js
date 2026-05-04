@@ -6,7 +6,7 @@
 
 // MOEX configuration - shorter TTL for intraday data
 const MOEX_CACHE_TTL_MS = 60 * 1000; // 1 minute (MOEX intraday changes frequently)
-const MOEX_API_URL = 'https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities/USDRUB_TOM.json?iss.meta=off&iss.only=marketdata&marketdata.columns=SECID,LAST,MARKETPRICE,LCURRENTPRICE,UPDATETIME,SYSTIME';
+const MOEX_API_URL = 'https://iss.moex.com/iss/engines/currency/markets/selt/boards/CETS/securities/USD000UTSTOM.json?iss.meta=off&iss.only=marketdata';
 
 // CBR configuration - longer TTL for daily data
 const CBR_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -150,7 +150,7 @@ async function fetchCbrRate() {
   try {
     console.log('[ExchangeRate] Fetching from CBR API...');
 
-    const response = await fetch(CBR_API_URL);
+    const response = await fetch(`${CBR_API_URL}?t=${Date.now()}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

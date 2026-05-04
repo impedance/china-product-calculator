@@ -56,30 +56,7 @@ export function formatUsd(value, showZero = false) {
   }).format(rounded) + ' $';
 }
 
-/**
- * Formats a number as USD
- * Format: "100 $"
- * @param {number|null|undefined} value - Value to format
- * @param {boolean} showZero - Whether to show 0 instead of placeholder
- * @returns {string} - Formatted string or placeholder
- */
-export function formatUsd(value, showZero = false) {
-  if (value === null || value === undefined || Number.isNaN(value)) {
-    return '—';
-  }
-  
-  if (value === 0 && !showZero) {
-    return '—';
-  }
-  
-  const rounded = Math.round(value * 100) / 100;
-  
-  return new Intl.NumberFormat('ru-RU', {
-    style: 'decimal',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(rounded) + ' $';
-}
+
 
 /**
  * Formats a number as percentage

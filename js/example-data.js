@@ -16,11 +16,11 @@ export const EXAMPLE_A = {
   densityKgM3: 250,
   cargoRateUsdPerKg: 2,
   unitWeightKg: 0.5,
-  insuranceRate: 3.7,
+  insuranceRate: 0.037,
   reworkRub: 50,
   packagingRub: 30,
-  markupRate: 100,
-  taxRate: 6
+  markupRate: 1,
+  taxRate: 0.06
 };
 
 /**
@@ -51,11 +51,11 @@ export const EXAMPLE_B = {
   densityKgM3: 180,
   cargoRateUsdPerKg: 2.5,
   unitWeightKg: 0.8,
-  insuranceRate: 3,
+  insuranceRate: 0.03,
   reworkRub: 40,
   packagingRub: 25,
-  markupRate: 80,
-  taxRate: 6
+  markupRate: 0.8,
+  taxRate: 0.06
 };
 
 /**

@@ -204,29 +204,7 @@ function setupEventListeners() {
     }
   });
   
-  // Step panel accordion toggle
-  Object.entries(elements.stepPanels).forEach(([stepNum, panel]) => {
-    if (!panel) return;
-    const header = panel.querySelector('.step-panel-header');
-    header?.addEventListener('click', () => {
-      if (panel.classList.contains('locked')) return;
-      
-      // Collapse all panels
-      Object.values(elements.stepPanels).forEach(p => {
-        if (p) {
-          p.classList.remove('expanded');
-          p.classList.add('collapsed');
-        }
-      });
-      
-      // Expand clicked panel
-      panel.classList.add('expanded');
-      panel.classList.remove('collapsed');
-      
-      // Update active step in state
-      expandStep(parseInt(stepNum));
-    });
-  });
+  // Step panel accordion toggle handled by progressive-ui.js
   
   // Step CTA buttons
   elements.btnExpandStep2?.addEventListener('click', () => expandStepPanel(2));
@@ -366,12 +344,24 @@ function handleReset() {
   if (confirm('Очистить все данные?')) {
     resetState();
     
-    // Clear input fields
+    // Force clear all input fields in DOM
     Object.values(elements.inputs).forEach(input => {
-      if (input) input.value = '';
+      if (input) {
+        input.value = '';
+        input.classList.remove('error');
+      }
     });
     
-    // Collapse results section
+    // Reset specific UI elements
+    const markupRange = document.getElementById('markup-range');
+    if (markupRange) {
+      markupRange.value = 100;
+      const fill = document.querySelector('#markup-slider .slider-fill');
+      const thumb = document.querySelector('#markup-slider .slider-thumb');
+      if (fill) fill.style.width = '33.33%';
+      if (thumb) thumb.style.left = '33.33%';
+    }
+    
     const resultsPanel = elements.resultsPanel;
     if (resultsPanel) {
       resultsPanel.classList.remove('expanded');
@@ -610,7 +600,7 @@ function render(state) {
   updateKpiCard(elements.kpiProfit, output.profitRub, formatRub, profitClass);
   
   const marginClass = (output.marginRate || 0) >= 0.2 ? 'profit' : '';
-  updateKpiCard(elements.kpiMargin, output.marginRate, formatPercent.bind(null, undefined, 1), marginClass);
+  updateKpiCard(elements.kpiMargin, output.marginRate, (v) => formatPercent(v, 1), marginClass);
   
   updateKpiCard(elements.kpiTaxes, output.taxRub, formatRub, 'cost');
   
