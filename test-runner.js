@@ -68,11 +68,11 @@ function calculateInsuranceRub(purchaseRub, insuranceRate) {
 }
 
 function calculateTotalCostRub(costs) {
-  const { purchaseRub, chinaDeliveryRub, cargoCostRub, insuranceRub, reworkRub, packagingRub } = costs;
-  if ([purchaseRub, chinaDeliveryRub, cargoCostRub, insuranceRub, reworkRub, packagingRub].some(v => v === null || v < 0)) {
+  const { purchaseRub, localDeliveryRub, cargoCostRub, insuranceRub, reworkRub, packagingRub } = costs;
+  if ([purchaseRub, localDeliveryRub, cargoCostRub, insuranceRub, reworkRub, packagingRub].some(v => v === null || v < 0)) {
     return null;
   }
-  return purchaseRub + chinaDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub;
+  return purchaseRub + localDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub;
 }
 
 function calculateRetailPriceRub(totalCostRub, markupRate) {
@@ -152,7 +152,7 @@ test('Total cost calculation', () => {
   const insurance = calculateInsuranceRub(purchase, 3.7);
   const result = calculateTotalCostRub({
     purchaseRub: purchase,
-    chinaDeliveryRub: 20,
+    localDeliveryRub: 20,
     cargoCostRub: cargo,
     insuranceRub: insurance,
     reworkRub: 50,
@@ -257,7 +257,7 @@ test('Example B full calculation', () => {
   const insurance = calculateInsuranceRub(purchase, 3);
   const total = calculateTotalCostRub({
     purchaseRub: purchase,
-    chinaDeliveryRub: 30,
+    localDeliveryRub: 30,
     cargoCostRub: cargo,
     insuranceRub: insurance,
     reworkRub: 40,

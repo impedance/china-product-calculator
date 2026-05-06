@@ -1,6 +1,6 @@
 # Feature Plan: Quantity Field + Summary Tab
 
-**Project:** china-product-calculator  
+**Project:** landed-cost-calculator  
 **Branch:** `feature/quantity-and-summary`  
 **Author:** inozemtsev  
 **Date:** 2026-04-27
@@ -286,10 +286,10 @@ This module manages the rows array for the Summary tab. Each row is a plain obje
 /**
  * summary-state.js
  * Manages the in-memory rows for the Summary (Свод) tab.
- * Persists to localStorage under key 'chinaCalc.summaryRows'.
+ * Persists to localStorage under key 'landedCalc.summaryRows'.
  */
 
-const STORAGE_KEY = 'chinaCalc.summaryRows';
+const STORAGE_KEY = 'landedCalc.summaryRows';
 
 // Each row shape:
 // {
@@ -876,7 +876,7 @@ TC-12             TC-15
 - [ ] Added 3 rows to Свод, edited inline, deleted one — ИТОГО correct each time
 - [ ] Clicked "Добавить из калькулятора" — row matches calculator output
 - [ ] Refreshed page — Tab 1 data restored, Свод rows restored
-- [ ] Opened DevTools → Application → localStorage — key `chinaCalc.summaryRows` present
+- [ ] Opened DevTools → Application → localStorage — key `landedCalc.summaryRows` present
 - [ ] Opened DevTools → Console — zero errors
 - [ ] Tested on 375px width (Chrome DevTools device toolbar) — no horizontal scroll on Tab 1
 - [ ] Toggled dark mode — table looks readable

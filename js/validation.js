@@ -28,7 +28,7 @@ export function validateField(fieldId, value) {
   
   // Optional fields with defaults (validate only if filled)
   const optionalFields = [
-    'chinaDeliveryRub',
+    'localDeliveryRub',
     'insuranceRate',
     'reworkRub',
     'packagingRub'
@@ -101,7 +101,7 @@ export function validateAllFields(input) {
   }
   
   // Check optional fields if they have values
-  const optionalFieldsList = ['productName', 'sku', 'densityKgM3', 'chinaDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
+  const optionalFieldsList = ['productName', 'sku', 'densityKgM3', 'localDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
   for (const fieldId of optionalFieldsList) {
     if (input[fieldId] !== null && input[fieldId] !== undefined && input[fieldId] !== '') {
       results[fieldId] = validateField(fieldId, input[fieldId]);
@@ -208,7 +208,7 @@ export function getInputElementId(fieldId) {
     sku: 'sku',
     unitPriceUsd: 'unit-price-usd',
     usdRubRate: 'usd-rub-rate',
-    chinaDeliveryRub: 'china-delivery-rub',
+    localDeliveryRub: 'local-delivery-rub',
     densityKgM3: 'density',
     cargoRateUsdPerKg: 'cargo-rate-usd',
     unitWeightKg: 'unit-weight',
@@ -233,7 +233,7 @@ export function getFieldIdFromElementId(elementId) {
     'sku': 'sku',
     'unit-price-usd': 'unitPriceUsd',
     'usd-rub-rate': 'usdRubRate',
-    'china-delivery-rub': 'chinaDeliveryRub',
+    'local-delivery-rub': 'localDeliveryRub',
     'density': 'densityKgM3',
     'cargo-rate-usd': 'cargoRateUsdPerKg',
     'unit-weight': 'unitWeightKg',

@@ -1,4 +1,4 @@
-/* China Product Calculator - Main Styles */
+/* Landed Cost Calculator - Main Styles */
 /* Mobile-first PWA styles */
 
 @import url('tokens.css');
@@ -462,7 +462,7 @@ body {
 }
 
 .composition-segment.purchase { background: #3b82f6; }
-.composition-segment.china-delivery { background: #8b5cf6; }
+.composition-segment.local-delivery { background: #8b5cf6; }
 .composition-segment.cargo { background: #f59e0b; }
 .composition-segment.insurance { background: #10b981; }
 .composition-segment.rework { background: #ef4444; }

@@ -15,7 +15,7 @@
 // import { formatRub, formatPercent } from './formatters.js';
 
 // Last used values storage
-const LAST_USED_KEY = 'china_calc_last_used';
+const LAST_USED_KEY = 'landed_calc_last_used';
 
 // Step configuration
 const STEPS = {
@@ -420,7 +420,7 @@ function updateUI(state) {
   }
   if (summaryTotalCost2) {
     const step2Total = (output.purchaseRub || 0) + (output.cargoCostRub || 0) + 
-                       (input.chinaDeliveryRub || 0) + (output.insuranceRub || 0);
+                       (input.localDeliveryRub || 0) + (output.insuranceRub || 0);
     summaryTotalCost2.textContent = step2Total > 0 ? formatRub(step2Total) : '—';
   }
   
@@ -482,7 +482,7 @@ function getInputElementId(fieldId) {
     usdRubRate: 'usd-rub-rate',
     unitWeightKg: 'unit-weight',
     cargoRateUsdPerKg: 'cargo-rate-usd',
-    chinaDeliveryRub: 'china-delivery-rub',
+    localDeliveryRub: 'local-delivery-rub',
     insuranceRate: 'insurance-rate',
     reworkRub: 'rework-rub',
     packagingRub: 'packaging-rub',
@@ -523,7 +523,7 @@ function getLastUsed(fieldId) {
  */
 function loadLastUsedValues() {
   const fields = ['unitPriceUsd', 'usdRubRate', 'cargoRateUsdPerKg',
-                  'chinaDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
+                  'localDeliveryRub', 'insuranceRate', 'reworkRub', 'packagingRub'];
   
   fields.forEach(fieldId => {
     const value = getLastUsed(fieldId);

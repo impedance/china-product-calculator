@@ -1,7 +1,7 @@
 {
-  "name": "China Product Calculator",
-  "short_name": "China Calc",
-  "description": "Калькулятор себестоимости и прибыли при закупке товаров из Китая",
+  "name": "Landed Cost Calculator",
+  "short_name": "Landed Calc",
+  "description": "Калькулятор себестоимости и прибыли при закупке товаров",
   "start_url": "./calculator.html",
   "display": "standalone",
   "background_color": "#f5f5f7",

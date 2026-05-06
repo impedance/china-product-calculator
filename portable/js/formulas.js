@@ -117,13 +117,13 @@ function calculateInsuranceRub(purchaseRub, insuranceRate) {
 
 /**
  * Calculates total cost in RUB
- * Formula: totalCostRub = purchaseRub + chinaDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub
+ * Formula: totalCostRub = purchaseRub + localDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub
  * @param {Object} costs - Object containing all cost components
  * @returns {number|null} - Total cost in RUB or null if any required input invalid
  */
 function calculateTotalCostRub({
   purchaseRub,
-  chinaDeliveryRub,
+  localDeliveryRub,
   cargoCostRub,
   insuranceRub,
   reworkRub,
@@ -133,7 +133,7 @@ function calculateTotalCostRub({
     return null;
   }
   
-  const delivery = chinaDeliveryRub || 0;
+  const delivery = localDeliveryRub || 0;
   const cargo = cargoCostRub || 0;
   const insurance = insuranceRub || 0;
   const rework = reworkRub || 0;
@@ -249,7 +249,7 @@ function calculateAll(input) {
   // Step 4: Calculate total cost (optional fields default to 0)
   const totalCostRub = calculateTotalCostRub({
     purchaseRub,
-    chinaDeliveryRub: input.chinaDeliveryRub || 0,
+    localDeliveryRub: input.localDeliveryRub || 0,
     cargoCostRub,
     insuranceRub,
     reworkRub: input.reworkRub || 0,
@@ -329,7 +329,7 @@ function getFieldLabels() {
     sku: 'Артикул / SKU',
     unitPriceUsd: 'Цена за единицу (USD)',
     usdRubRate: 'Курс USD/RUB',
-    chinaDeliveryRub: 'Доставка по Китаю (₽)',
+    localDeliveryRub: 'Локальная доставка (₽)',
     densityKgM3: 'Плотность (кг/м³)',
     cargoRateUsdPerKg: 'Ставка карго (USD/кг)',
     unitWeightKg: 'Вес единицы (кг)',

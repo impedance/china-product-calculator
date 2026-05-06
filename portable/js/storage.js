@@ -4,10 +4,10 @@
  */
 
 const STORAGE_KEYS = {
-  LATEST_SCENARIO: 'chinaCalc.latestScenario',
-  THEME: 'chinaCalc.theme',
-  LAST_SAVED_AT: 'chinaCalc.lastSavedAt',
-  VERSION: 'chinaCalc.version'
+  LATEST_SCENARIO: 'landedCalc.latestScenario',
+  THEME: 'landedCalc.theme',
+  LAST_SAVED_AT: 'landedCalc.lastSavedAt',
+  VERSION: 'landedCalc.version'
 };
 
 const CURRENT_VERSION = '1.0.0';

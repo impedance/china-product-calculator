@@ -1,10 +1,10 @@
 /**
- * Service Worker for China Product Calculator PWA
+ * Service Worker for Landed Cost Calculator PWA
  * Provides offline functionality after first load
  * Cache-first strategy for static assets
  */
 
-const CACHE_NAME = 'china-calc-v1';
+const CACHE_NAME = 'landed-calc-v1';
 
 // Files to cache for offline use
 const STATIC_ASSETS = [

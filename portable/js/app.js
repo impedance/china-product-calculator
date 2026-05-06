@@ -91,7 +91,7 @@ function cacheElements() {
     sku: document.getElementById('sku'),
     unitPriceUsd: document.getElementById('unit-price-usd'),
     usdRubRate: document.getElementById('usd-rub-rate'),
-    chinaDeliveryRub: document.getElementById('china-delivery-rub'),
+    localDeliveryRub: document.getElementById('local-delivery-rub'),
     densityKgM3: document.getElementById('density'),
     cargoRateUsdPerKg: document.getElementById('cargo-rate-usd'),
     unitWeightKg: document.getElementById('unit-weight'),
@@ -107,7 +107,7 @@ function cacheElements() {
   elements.errors = {
     unitPriceUsd: document.getElementById('error-unit-price-usd'),
     usdRubRate: document.getElementById('error-usd-rub-rate'),
-    chinaDeliveryRub: document.getElementById('error-china-delivery-rub'),
+    localDeliveryRub: document.getElementById('error-local-delivery-rub'),
     cargoRateUsdPerKg: document.getElementById('error-cargo-rate-usd'),
     unitWeightKg: document.getElementById('error-unit-weight'),
     insuranceRate: document.getElementById('error-insurance-rate'),
@@ -444,7 +444,7 @@ function showHelpSheet() {
           <span class="instruction-step-title">Шаг 2: Логистика</span>
         </div>
         <div class="instruction-step-desc">
-          Укажите вес единицы (кг) и ставку карго ($/кг). Доставка по Китаю — опционально.
+          Укажите вес единицы (кг) и ставку карго ($/кг). Локальная доставка — опционально.
         </div>
       </div>
       
@@ -736,7 +736,7 @@ function updateStepPanelStates(input, output, ui) {
     summaryCargo.textContent = output.cargoCostRub !== null ? formatRub(output.cargoCostRub) : '—';
   }
   if (summaryTotalCost2) {
-    const step2Total = (output.purchaseRub || 0) + (output.cargoCostRub || 0) + (input.chinaDeliveryRub || 0);
+    const step2Total = (output.purchaseRub || 0) + (output.cargoCostRub || 0) + (input.localDeliveryRub || 0);
     summaryTotalCost2.textContent = step2Total > 0 ? formatRub(step2Total) : '—';
   }
   
@@ -967,7 +967,7 @@ async function init() {
       });
   }
   
-  console.log('[App] China Product Calculator initialized with progressive UI');
+  console.log('[App] Landed Cost Calculator initialized with progressive UI');
 }
 
 /**

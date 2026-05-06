@@ -1,10 +1,10 @@
 /**
  * summary-state.js
  * Manages the in-memory rows for the Summary (Свод) tab.
- * Persists to localStorage under key 'chinaCalc.summaryRows'.
+ * Persists to localStorage under key 'landedCalc.summaryRows'.
  */
 
-const STORAGE_KEY = 'chinaCalc.summaryRows';
+const STORAGE_KEY = 'landedCalc.summaryRows';
 
 // Each row shape:
 // {

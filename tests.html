@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>China Product Calculator - Unit Tests</title>
+  <title>Landed Cost Calculator - Unit Tests</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -71,7 +71,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>China Product Calculator - Unit Tests</h1>
+    <h1>Landed Cost Calculator - Unit Tests</h1>
     
     <button class="run-btn" id="run-tests">Запустить тесты</button>
     
@@ -167,7 +167,7 @@
         const input = {
           unitPriceUsd: 15,
           usdRubRate: 95,
-          chinaDeliveryRub: 20,
+          localDeliveryRub: 20,
           cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 3.7,
@@ -219,7 +219,7 @@
         const input = {
           unitPriceUsd: 15,
           usdRubRate: 95,
-          chinaDeliveryRub: 20,
+          localDeliveryRub: 20,
           cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 0,
@@ -241,7 +241,7 @@
         const input = {
           unitPriceUsd: 15,
           usdRubRate: 95,
-          chinaDeliveryRub: 20,
+          localDeliveryRub: 20,
           cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 0,
@@ -285,7 +285,7 @@
         const input = {
           unitPriceUsd: 15,
           usdRubRate: 95,
-          chinaDeliveryRub: 20,
+          localDeliveryRub: 20,
           cargoRateUsdPerKg: 2,
           unitWeightKg: 0.5,
           insuranceRate: 3.7,
@@ -318,7 +318,7 @@
         const input = {
           unitPriceUsd: null,
           usdRubRate: null,
-          chinaDeliveryRub: null,
+          localDeliveryRub: null,
           cargoRateUsdPerKg: null,
           unitWeightKg: null,
           insuranceRate: null,
@@ -392,7 +392,7 @@
         const input = {
           unitPriceUsd: 10,
           usdRubRate: 98,
-          chinaDeliveryRub: 30,
+          localDeliveryRub: 30,
           cargoRateUsdPerKg: 2.5,
           unitWeightKg: 0.8,
           insuranceRate: 3,

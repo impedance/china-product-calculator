@@ -1,6 +1,6 @@
-# AGENTS.md — China Product Calculator
+# AGENTS.md — Landed Cost Calculator
 
-Mobile-first PWA calculator for landed cost / profit / margin on goods imported from China to Russia.
+Mobile-first PWA calculator for landed cost / profit / margin on goods imported to Russia.
 
 ## Stack
 

@@ -1,4 +1,4 @@
-# China Product Cost & Profit Calculator — MVP Technical Specification
+# Landed Cost Calculator — MVP Technical Specification
 
 ## 1. Document purpose
 
@@ -60,7 +60,7 @@ This preserves the author’s structure without inventing new pricing rules.
 
 ## 3. Product goal
 
-Build a simple PWA that helps a user estimate the **real unit cost**, **retail price**, **tax burden**, **profit**, and **margin** of a product imported from China to Russia.
+Build a simple PWA that helps a user estimate the **real unit cost**, **retail price**, **tax burden**, **profit**, and **margin** of a product imported to Russia.
 
 The MVP must be fast to open, easy to use on a phone, and usable offline after first load.
 
@@ -109,7 +109,7 @@ Primary user:
 
 User job to be done:
 
-> “Before I buy a product in China, I want to understand the full landed unit cost and expected profit in rubles, so I can decide whether the product makes sense.”
+> “Before I buy a product, I want to understand the full landed unit cost and expected profit in rubles, so I can decide whether the product makes sense.”
 
 ---
 
@@ -193,7 +193,7 @@ Fields:
 
 ### Section B — Logistics
 Fields:
-- China domestic delivery (RUB)
+- Local delivery (RUB)
 - Density (kg/m³) — saved only, not used in MVP formula
 - Cargo rate (USD/kg)
 - USD/RUB exchange rate
@@ -243,7 +243,7 @@ This should be lightweight and not required for first release if time is tight.
 | unitPriceCny | Unit price | number | CNY | yes | yes | >= 0 |
 | cnyRubRate | CNY/RUB rate | number | RUB | yes | yes | > 0 |
 | purchaseRub | Purchase in RUB | computed | RUB | - | no | formula |
-| chinaDeliveryRub | Delivery in China | number | RUB | yes | yes | >= 0 |
+| localDeliveryRub | Local delivery | number | RUB | yes | yes | >= 0 |
 | densityKgM3 | Density | number | kg/m³ | no | yes | saved, not used in MVP |
 | cargoRateUsdPerKg | Cargo rate | number | USD/kg | yes | yes | >= 0 |
 | usdRubRate | USD/RUB rate | number | RUB | yes | yes | > 0 |
@@ -300,7 +300,7 @@ insuranceRub = purchaseRub * insuranceRateNormalized
 ```text
 totalCostRub =
   purchaseRub +
-  chinaDeliveryRub +
+  localDeliveryRub +
   cargoCostRub +
   insuranceRub +
   reworkRub +
@@ -400,7 +400,7 @@ Include a built-in example using the spreadsheet draft values.
 - Product name = Product A
 - Unit price (CNY) = 100
 - CNY/RUB = 13.5
-- Delivery in China = 20
+- Local delivery = 20
 - Density = 250
 - Cargo rate = 2
 - USD/RUB = 100
@@ -557,7 +557,7 @@ Test only the highest-value logic:
 Input:
 - unitPriceCny = 100
 - cnyRubRate = 13.5
-- chinaDeliveryRub = 20
+- localDeliveryRub = 20
 - cargoRateUsdPerKg = 2
 - usdRubRate = 100
 - unitWeightKg = 0.5
@@ -641,7 +641,7 @@ Expected:
 Expected:
 ```text
 totalCostRub =
-purchaseRub + chinaDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub
+purchaseRub + localDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub
 ```
 No missing or duplicated cost line items.
 

@@ -24,7 +24,7 @@ const initialInputState = {
   sku: '',
   unitPriceUsd: null,
   usdRubRate: null,
-  chinaDeliveryRub: null,
+  localDeliveryRub: null,
   densityKgM3: null,
   cargoRateUsdPerKg: null,
   unitWeightKg: null,
@@ -174,7 +174,7 @@ export function recalculate() {
   const insuranceRub = calculateInsuranceRub(purchaseRub, input.insuranceRate || 0);
   const totalCostRub = calculateTotalCostRub({
     purchaseRub,
-    chinaDeliveryRub: input.chinaDeliveryRub || 0,
+    localDeliveryRub: input.localDeliveryRub || 0,
     cargoCostRub,
     insuranceRub,
     reworkRub: input.reworkRub || 0,
@@ -458,7 +458,7 @@ export function getCalculationSummary() {
   // Find the main cost driver
   const costComponents = [
     { name: 'Закупка', value: output.purchaseRub || 0 },
-    { name: 'Доставка по Китаю', value: input.chinaDeliveryRub || 0 },
+    { name: 'Локальная доставка', value: input.localDeliveryRub || 0 },
     { name: 'Карго', value: output.cargoCostRub || 0 },
     { name: 'Страховка', value: output.insuranceRub || 0 },
     { name: 'Переработка', value: input.reworkRub || 0 },
@@ -518,7 +518,7 @@ export function getBreakdownData() {
   
   const components = [
     { id: 'purchase', label: 'Закупка', value: output.purchaseRub || 0, color: '#3b82f6' },
-    { id: 'china-delivery', label: 'Доставка по Китаю', value: input.chinaDeliveryRub || 0, color: '#8b5cf6' },
+    { id: 'local-delivery', label: 'Локальная доставка', value: input.localDeliveryRub || 0, color: '#8b5cf6' },
     { id: 'cargo', label: 'Карго', value: output.cargoCostRub || 0, color: '#f59e0b' },
     { id: 'insurance', label: 'Страховка', value: output.insuranceRub || 0, color: '#10b981' },
     { id: 'rework', label: 'Переработка', value: input.reworkRub || 0, color: '#ef4444' },
