@@ -360,6 +360,7 @@ body {
   padding: var(--space-md);
   box-shadow: var(--shadow-card);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  min-width: 0;
 }
 
 .kpi-card:hover {
@@ -393,6 +394,8 @@ body {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .kpi-value.profit {
@@ -583,6 +586,8 @@ body {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .result-value.empty {
@@ -1326,6 +1331,8 @@ body {
   color: var(--color-accent);
   font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Rate Source Indicator */

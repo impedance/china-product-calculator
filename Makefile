@@ -13,3 +13,8 @@ open: serve
 
 clean:
 	rm -f $(wildcard icon-*.png)
+
+sync-portable:
+	cp css/* portable/css/
+	cp js/* portable/js/
+	@echo "Static assets synced to portable/. Note: portable/calculator.html may still need manual inlining if used as a single file."

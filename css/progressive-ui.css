@@ -137,6 +137,8 @@
 .summary-value {
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Step CTA Button */
@@ -213,6 +215,8 @@
   color: var(--color-accent);
   font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Rate Source Indicator */
@@ -418,6 +422,8 @@
 .preview-text strong {
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .preview-divider {
