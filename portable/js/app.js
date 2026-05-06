@@ -3,7 +3,7 @@
  * Wires input events, button actions, render cycle
  */
 
-import { 
+// import { 
   subscribe, 
   updateInput, 
   resetState, 
@@ -19,43 +19,43 @@ import {
   getState
 } from './state.js';
 
-import { 
+// import { 
   formatRub, 
   formatPercent,
   parseNumber
 } from './formatters.js';
 
-import { 
+// import { 
   loadScenario, 
   getLastSavedAt 
 } from './storage.js';
 
-import { 
+// import { 
   initTheme, 
   setupThemeListeners 
 } from './theme.js';
 
-import { 
+// import { 
   getPreset, 
   getPresetDescription 
 } from './example-data.js';
 
-import {
+// import {
   getMissingRequiredFields,
   getFieldIdFromElementId,
   getInputElementId
 } from './validation.js';
 
-import {
+// import {
   initProgressiveUI,
   loadLastUsedValues
 } from './progressive-ui.js';
 
-import {
+// import {
   fetchUsdRate
 } from './exchange-rate.js';
 
-import {
+// import {
   getRows, addRow, deleteRow, updateRow, getTotals, loadFromStorage, subscribe as subscribeSummary
 } from './summary-state.js';
 

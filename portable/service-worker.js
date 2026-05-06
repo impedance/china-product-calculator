@@ -9,7 +9,7 @@ const CACHE_NAME = 'china-calc-v1';
 // Files to cache for offline use
 const STATIC_ASSETS = [
   './',
-  './index.html',
+  './calculator.html',
   './manifest.json',
   './css/tokens.css',
   './css/styles.css',
