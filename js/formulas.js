@@ -72,7 +72,7 @@ export function calculatePurchaseRub(unitPriceUsd, usdRubRate) {
   }
 
   const result = unitPriceUsd * usdRubRate;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -91,7 +91,7 @@ export function calculateCargoCostRub(unitWeightKg, cargoRateUsdPerKg, usdRubRat
   }
 
   const result = unitWeightKg * cargoRateUsdPerKg * usdRubRate;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -112,7 +112,7 @@ export function calculateInsuranceRub(purchaseRub, insuranceRate) {
   }
   
   const result = purchaseRub * normalizedRate;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -140,7 +140,7 @@ export function calculateTotalCostRub({
   const packaging = packagingRub || 0;
   
   const result = purchaseRub + delivery + cargo + insurance + rework + packaging;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -163,7 +163,7 @@ export function calculateRetailPriceRub(totalCostRub, markupRate) {
   }
   
   const result = totalCostRub * (1 + normalizedMarkup);
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -184,7 +184,7 @@ export function calculateTaxRub(retailPriceRub, taxRate) {
   }
   
   const result = retailPriceRub * normalizedRate;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -203,7 +203,7 @@ export function calculateProfitRub(retailPriceRub, totalCostRub, taxRub) {
   }
   
   const result = retailPriceRub - totalCostRub - taxRub;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -304,7 +304,7 @@ export function calculateTotalRevenue(quantity, retailPriceRub) {
     return null;
   }
   const result = quantity * retailPriceRub;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**
@@ -316,7 +316,7 @@ export function calculateBatchProfit(quantity, profitPerUnit) {
     return null;
   }
   const result = quantity * profitPerUnit;
-  return Number.isFinite(result) ? result : null;
+  return Number.isFinite(result) ? Math.ceil(result) : null;
 }
 
 /**

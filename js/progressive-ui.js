@@ -375,7 +375,7 @@ function setupInlinePreviews() {
     const usdRate = parseFloat(usdRateInput?.value) || 0;
 
     if (elements.previewUnitPrice) {
-      const purchaseRub = unitPrice * usdRate;
+      const purchaseRub = Math.ceil(unitPrice * usdRate);
       elements.previewUnitPrice.querySelector('.preview-value').textContent =
         purchaseRub > 0 ? formatRub(purchaseRub) : '—';
     }

@@ -19,16 +19,13 @@ export function formatRub(value, showZero = false) {
     return '—';
   }
   
-  // Round to 2 decimal places
-  const rounded = Math.round(value * 100) / 100;
-  
-  // Format with Russian locale
+  // Format with Russian locale (no kopecks)
   return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
     currency: 'RUB',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(rounded);
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
 }
 
 /**

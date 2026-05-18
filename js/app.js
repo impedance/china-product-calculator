@@ -183,11 +183,7 @@ function setupEventListeners() {
     });
   });
   
-  // Quantity input - special handling for integer values
-  elements.inputs.quantity?.addEventListener('input', (e) => {
-    const raw = parseFloat(e.target.value);
-    setInputField('quantity', Number.isNaN(raw) ? null : Math.floor(raw));
-  });
+
   
   // Button listeners
   elements.btnExampleA?.addEventListener('click', () => loadExample('example-a'));
@@ -748,7 +744,7 @@ function updateStepPanelStates(input, output, ui) {
   // Update inline previews
   const previewUnitPrice = document.getElementById('preview-unit-price');
   if (previewUnitPrice) {
-    const purchaseRub = (input.unitPriceUsd || 0) * (input.usdRubRate || 0);
+    const purchaseRub = Math.ceil((input.unitPriceUsd || 0) * (input.usdRubRate || 0));
     previewUnitPrice.querySelector('.preview-value').textContent = purchaseRub > 0 ? formatRub(purchaseRub) : '—';
   }
 }
@@ -814,7 +810,7 @@ function updateBreakdownVisualization() {
 
 function formatNum(v) {
   if (v == null || !Number.isFinite(v)) return '—';
-  return v.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+  return v.toLocaleString('ru-RU', { maximumFractionDigits: 0 });
 }
 
 function renderSummary() {
@@ -838,10 +834,10 @@ function renderSummary() {
       <tr data-row-id="${row.id}">
         <td><input class="summary-input" data-field="productName" value="${row.productName}" /></td>
         <td><input class="summary-input summary-input--num" data-field="quantity" value="${row.quantity}" /></td>
-        <td><input class="summary-input summary-input--num" data-field="unitCost" value="${row.unitCost}" /></td>
+        <td><input class="summary-input summary-input--num" data-field="unitCost" value="${Math.ceil(row.unitCost)}" /></td>
         <td class="summary-computed">${formatNum(totalCost)}</td>
-        <td><input class="summary-input summary-input--num" data-field="retailPrice" value="${row.retailPrice}" /></td>
-        <td><input class="summary-input summary-input--num" data-field="profitPerUnit" value="${row.profitPerUnit}" /></td>
+        <td><input class="summary-input summary-input--num" data-field="retailPrice" value="${Math.ceil(row.retailPrice)}" /></td>
+        <td><input class="summary-input summary-input--num" data-field="profitPerUnit" value="${Math.ceil(row.profitPerUnit)}" /></td>
         <td class="summary-computed">${formatNum(totalRevenue)}</td>
         <td class="summary-computed">${formatNum(totalProfit)}</td>
         <td class="summary-computed">${margin}%</td>
@@ -875,7 +871,7 @@ function renderSummary() {
       if (!rowId || !field) return;
       const numFields = ['quantity', 'unitCost', 'retailPrice', 'profitPerUnit'];
       const value = numFields.includes(field)
-        ? (parseFloat(e.target.value) || 0)
+        ? Math.ceil(parseFloat(e.target.value) || 0)
         : e.target.value;
       updateRow(rowId, { [field]: value });
     });

@@ -74,18 +74,10 @@ export function getTotals() {
 }
 
 export function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) rows = JSON.parse(raw);
-  } catch (e) {
-    rows = [];
-  }
+  // Persistence disabled as requested
+  rows = [];
 }
 
 function _persist() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-  } catch (e) {
-    console.warn('summary-state: failed to persist', e);
-  }
+  // Persistence disabled as requested
 }

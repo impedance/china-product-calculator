@@ -51,20 +51,20 @@ function normalizePercent(value) {
 
 function calculatePurchaseRub(unitPriceUsd, usdRubRate) {
   if (unitPriceUsd === null || usdRubRate === null || unitPriceUsd < 0 || usdRubRate <= 0) return null;
-  return unitPriceUsd * usdRubRate;
+  return Math.ceil(unitPriceUsd * usdRubRate);
 }
 
 function calculateCargoCostRub(unitWeightKg, cargoRateUsdPerKg, usdRubRate) {
   if (unitWeightKg === null || cargoRateUsdPerKg === null || usdRubRate === null) return null;
   if (unitWeightKg < 0 || cargoRateUsdPerKg < 0 || usdRubRate <= 0) return null;
-  return unitWeightKg * cargoRateUsdPerKg * usdRubRate;
+  return Math.ceil(unitWeightKg * cargoRateUsdPerKg * usdRubRate);
 }
 
 function calculateInsuranceRub(purchaseRub, insuranceRate) {
   if (purchaseRub === null || insuranceRate === null || purchaseRub < 0) return null;
   const rate = normalizePercent(insuranceRate);
   if (rate === null || rate < 0) return null;
-  return purchaseRub * rate;
+  return Math.ceil(purchaseRub * rate);
 }
 
 function calculateTotalCostRub(costs) {
@@ -72,26 +72,26 @@ function calculateTotalCostRub(costs) {
   if ([purchaseRub, localDeliveryRub, cargoCostRub, insuranceRub, reworkRub, packagingRub].some(v => v === null || v < 0)) {
     return null;
   }
-  return purchaseRub + localDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub;
+  return Math.ceil(purchaseRub + localDeliveryRub + cargoCostRub + insuranceRub + reworkRub + packagingRub);
 }
 
 function calculateRetailPriceRub(totalCostRub, markupRate) {
   if (totalCostRub === null || markupRate === null || totalCostRub < 0) return null;
   // markupRate should already be in decimal form (UI converts percent to decimal)
   if (markupRate < 0) return null;
-  return totalCostRub * (1 + markupRate);
+  return Math.ceil(totalCostRub * (1 + markupRate));
 }
 
 function calculateTaxRub(retailPriceRub, taxRate) {
   if (retailPriceRub === null || taxRate === null || retailPriceRub < 0) return null;
   const rate = normalizePercent(taxRate);
   if (rate === null || rate < 0) return null;
-  return retailPriceRub * rate;
+  return Math.ceil(retailPriceRub * rate);
 }
 
 function calculateProfitRub(retailPriceRub, totalCostRub, taxRub) {
   if ([retailPriceRub, totalCostRub, taxRub].some(v => v === null || v < 0)) return null;
-  return retailPriceRub - totalCostRub - taxRub;
+  return Math.ceil(retailPriceRub - totalCostRub - taxRub);
 }
 
 function calculateMarginRate(profitRub, retailPriceRub) {
@@ -143,7 +143,7 @@ test('Cargo cost calculation', () => {
 test('Insurance calculation', () => {
   const purchase = calculatePurchaseRub(15, 95);
   const result = calculateInsuranceRub(purchase, 3.7);
-  assertEqual(result, 52.73, 'Insurance should be 52.73');
+  assertEqual(result, 53, 'Insurance should be 53');
 });
 
 test('Total cost calculation', () => {
@@ -158,26 +158,26 @@ test('Total cost calculation', () => {
     reworkRub: 50,
     packagingRub: 30
   });
-  assertEqual(result, 1672.73, 'Total cost should be 1672.73');
+  assertEqual(result, 1673, 'Total cost should be 1673');
 });
 
 test('Retail price calculation', () => {
-  const result = calculateRetailPriceRub(1672.73, 1.0);  // 100% markup as decimal
-  assertEqual(result, 3345.46, 'Retail should be 3345.46');
+  const result = calculateRetailPriceRub(1673, 1.0);  // 100% markup as decimal
+  assertEqual(result, 3346, 'Retail should be 3346');
 });
 
 test('Tax calculation', () => {
-  const result = calculateTaxRub(3345.46, 6);
-  assertEqual(result, 200.73, 'Tax should be 200.73');
+  const result = calculateTaxRub(3346, 6);
+  assertEqual(result, 201, 'Tax should be 201');
 });
 
 test('Profit calculation', () => {
-  const result = calculateProfitRub(3345.46, 1672.73, 200.73);
-  assertEqual(result, 1472.00, 'Profit should be 1472.00');
+  const result = calculateProfitRub(3346, 1673, 201);
+  assertEqual(result, 1472.00, 'Profit should be 1472');
 });
 
 test('Margin calculation', () => {
-  const result = calculateMarginRate(1472.00, 3345.46);
+  const result = calculateMarginRate(1472.00, 3346);
   assertEqual(result, 0.44, 'Margin should be 44%');
 });
 
@@ -270,11 +270,11 @@ test('Example B full calculation', () => {
 
   assertEqual(purchase, 980, 'Purchase');
   assertEqual(cargo, 196, 'Cargo');
-  assertEqual(insurance, 29.40, 'Insurance');
-  assertEqual(total, 1300.40, 'Total cost');
-  assertEqual(retail, 2340.72, 'Retail');
-  assertEqual(tax, 140.44, 'Tax');
-  assertEqual(profit, 899.88, 'Profit');
+  assertEqual(insurance, 30, 'Insurance');
+  assertEqual(total, 1301, 'Total cost');
+  assertEqual(retail, 2342, 'Retail');
+  assertEqual(tax, 141, 'Tax');
+  assertEqual(profit, 900, 'Profit');
   assertEqual(margin, 0.384, 'Margin');
 });
 
@@ -358,8 +358,8 @@ test('Empty date returns empty string', () => {
 // TC-11: calculateTotalRevenue
 console.log('\n--- TC-11: calculateTotalRevenue ---');
 test('calculateTotalRevenue: quantity × retail price', () => {
-  const result = calculateTotalRevenue(500, 3345.46);
-  assertEqual(result, 1672730, 1);
+  const result = calculateTotalRevenue(500, 3346);
+  assertEqual(result, 1673000, 1);
 });
 
 test('calculateTotalRevenue: null for invalid quantity', () => {
