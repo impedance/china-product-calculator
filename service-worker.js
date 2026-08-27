@@ -4,7 +4,7 @@
  * Cache-first strategy for static assets
  */
 
-const CACHE_NAME = 'landed-calc-v1';
+const CACHE_NAME = 'landed-calc-v2';
 
 // Files to cache for offline use
 const STATIC_ASSETS = [
